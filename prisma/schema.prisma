@@ -1,0 +1,54 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Route {
+  id        String @id @default(uuid())
+  routeName String
+  buses     Bus[]
+  stops     Stop[]
+}
+
+model Bus {
+  id        String @id @default(uuid())
+  route     Route  @relation(fields: [routeId], references: [id])
+  routeId   String
+  busNumber String
+  capacity  String
+  status    String
+}
+
+model Stop {
+  id        String @id @default(uuid())
+  route     Route  @relation(fields: [routeId], references: [id])
+  routeId   String
+  stopName  String
+  latitude  String
+  longitude String
+}
+
+model RouteChannel {
+  id        String @id @default(uuid())
+  channelId String
+}
+
+model BusChannel {
+  id        String @id @default(uuid())
+  channelId String
+}
+
+model BusLocationChannel {
+  id        String @id @default(uuid())
+  channelId String
+}
