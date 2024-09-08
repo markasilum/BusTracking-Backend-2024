@@ -16,8 +16,18 @@ datasource db {
 model Route {
   id        String @id @default(uuid())
   routeName String
+  coordinates RouteCoordinate[]
   buses     Bus[]
   stops     Stop[]
+}
+
+model RouteCoordinate {
+  id        String  @id @default(uuid())
+  routeId   String  // Foreign key for the Route model
+  route     Route   @relation(fields: [routeId], references: [id])
+  latitude  Float
+  longitude Float
+
 }
 
 model Bus {
