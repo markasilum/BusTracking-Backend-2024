@@ -10,6 +10,27 @@ const getRouteIndex = async(req, res) => {
       }
     
 }
+
+//index of coordinates
+const getRoutesCoordinates = async(req, res) => {
+  try {
+      const routes = await prisma.route.findMany({
+        include:{
+          coordinates: {
+            select: {
+              latitude: true,
+              longitude: true
+            }
+          }
+        }
+      });
+      res.status(200).json(routes);
+    } catch (error) {
+      res.status(500).json({ error: 'An error occurred while fetching buses' });
+    }
+  
+}
 module.exports = {
-    getRouteIndex
+    getRouteIndex,
+    getRoutesCoordinates
 }
