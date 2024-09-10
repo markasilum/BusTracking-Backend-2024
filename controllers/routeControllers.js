@@ -17,10 +17,15 @@ const getRoutesCoordinates = async(req, res) => {
       const routes = await prisma.route.findMany({
         include:{
           coordinates: {
+            orderBy:{
+              pointOrder:"asc"
+            },
             select: {
+              pointOrder: true,
               latitude: true,
               longitude: true
-            }
+            },
+            
           }
         }
       });

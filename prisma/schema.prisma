@@ -26,6 +26,7 @@ model RouteCoordinates {
   id        String  @id @default(uuid())
   routeId   String  // Foreign key for the Route model
   route     Route   @relation(fields: [routeId], references: [id])
+  pointOrder Int
   latitude  Float
   longitude Float
 }
