@@ -35,7 +35,30 @@ const getRoutesCoordinates = async(req, res) => {
     }
   
 }
+
+const createRoute = async (req,res) => {
+  const { routeName, routeColor, coordinates } = req.body;
+
+  try {
+    // Create a new route
+    const newRoute = await prisma.route.create({
+      data: {
+        routeName,
+        routeColor,
+        coordinates: {
+          create: coordinates, // `coordinates` should be an array of objects
+        },
+      },
+    });
+
+    res.status(201).json(newRoute);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while creating the route' });
+  }
+}
 module.exports = {
     getRouteIndex,
-    getRoutesCoordinates
+    getRoutesCoordinates,
+    createRoute
 }
