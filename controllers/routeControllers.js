@@ -3,7 +3,11 @@ const prisma = new PrismaClient();
 
 const getRouteIndex = async(req, res) => {
     try {
-        const routes = await prisma.route.findMany();
+        const routes = await prisma.route.findMany({
+          orderBy:{
+            routeName:"asc"
+          },
+        });
         res.status(200).json(routes);
       } catch (error) {
         res.status(500).json({ error: 'An error occurred while fetching buses' });
