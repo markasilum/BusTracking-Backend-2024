@@ -29,8 +29,8 @@ const createBus = async (req, res) => {
         capacity,
         route,
         status,
-        driverId, // This should match a valid driver ID
-        routeId, // This should match a valid route ID
+        driverId,
+        routeId,
       },
     });
     res.status(201).json(newBus);
