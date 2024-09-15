@@ -32,22 +32,23 @@ model RouteCoordinates {
 }
 
 model Bus {
-  id        String      @id @default(uuid())
-  route     Route       @relation(fields: [routeId], references: [id])
+  id        String  @id @default(uuid())
+  route     Route   @relation(fields: [routeId], references: [id])
   routeId   String
+  busName   String
   busNumber String
   capacity  String
   status    String
-  // Passenger Passenger[]
+  driver    Driver? @relation(fields: [driverId], references: [id])
+  driverId  String?
 }
 
-model Passenger {
-  id        String   @id @default(uuid())
-  //bus       Bus      @relation(fields: [busId], references: [id])
-  // busId     String
-  rfidUID   String // Store the RFID card UID
-  scannedAt DateTime @default(now()) // Timestamp of when the card was scanned
-  // Bus       Bus      @relation(fields: [busId], references: [id])
+model Driver {
+  id     String @id @default(uuid())
+  name   String
+  phone  String
+  status String
+  buses  Bus[]
 }
 
 model Stop {

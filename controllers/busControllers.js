@@ -1,15 +1,110 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-const getBusIndex = async(req, res) => {
-    try {
-        const buses = await prisma.bus.findMany();
-        res.status(200).json(buses);
-      } catch (error) {
-        res.status(500).json({ error: 'An error occurred while fetching buses' });
-      }
-    
-}
+// Get all buses
+const getBusIndex = async (req, res) => {
+  try {
+    const buses = await prisma.bus.findMany({
+      include: {
+        route: true, // Include related route data if needed
+        driver: true, // Include related driver data if needed
+      },
+    });
+    res.status(200).json(buses);
+  } catch (error) {
+    res.status(500).json({ error: "An error occurred while fetching buses" });
+  }
+};
+
+// Create a new bus
+const createBus = async (req, res) => {
+  const { busName, busNumber, route, capacity, status, driverId, routeId } =
+    req.body;
+
+  try {
+    const newBus = await prisma.bus.create({
+      data: {
+        busName,
+        busNumber,
+        capacity,
+        route,
+        status,
+        driverId,
+        routeId,
+      },
+    });
+    res.status(201).json(newBus);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "An error occurred while creating the bus" });
+  }
+};
+
+// Get a bus by ID
+const getBusById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const bus = await prisma.bus.findUnique({
+      where: { id },
+      include: {
+        route: true,
+        driver: true,
+      },
+    });
+
+    if (!bus) {
+      return res.status(404).json({ error: "Bus not found" });
+    }
+
+    res.status(200).json(bus);
+  } catch (error) {
+    res.status(500).json({ error: "An error occurred while fetching the bus" });
+  }
+};
+
+// Update a bus
+const updateBus = async (req, res) => {
+  const { id } = req.params;
+  const { busName, busNumber, capacity, status, driverId, routeId } = req.body;
+
+  try {
+    const updatedBus = await prisma.bus.update({
+      where: { id },
+      data: {
+        busName,
+        busNumber,
+        route,
+        capacity,
+        status,
+        driverId,
+        routeId,
+      },
+    });
+    res.status(200).json(updatedBus);
+  } catch (error) {
+    res.status(500).json({ error: "An error occurred while updating the bus" });
+  }
+};
+
+// Delete a bus
+const deleteBus = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    await prisma.bus.delete({
+      where: { id },
+    });
+    res.status(204).send(); // No content to send back
+  } catch (error) {
+    res.status(500).json({ error: "An error occurred while deleting the bus" });
+  }
+};
+
 module.exports = {
-    getBusIndex
-}
+  getBusIndex,
+  createBus,
+  getBusById,
+  updateBus,
+  deleteBus,
+};
