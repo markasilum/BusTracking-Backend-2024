@@ -1,13 +1,16 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-// Get all buses
+// Get all buses with passenger count
 const getBusIndex = async (req, res) => {
   try {
     const buses = await prisma.bus.findMany({
       include: {
-        route: true, // Include related route data if needed
-        driver: true, // Include related driver data if needed
+        route: true,
+        driver: true,
+        _count: {
+          select: { passengers: true } // Count the number of passengers
+        }
       },
     });
     res.status(200).json(buses);
@@ -15,6 +18,7 @@ const getBusIndex = async (req, res) => {
     res.status(500).json({ error: "An error occurred while fetching buses" });
   }
 };
+
 
 // Create a new bus
 const createBus = async (req, res) => {
