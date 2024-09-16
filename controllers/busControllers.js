@@ -9,8 +9,8 @@ const getBusIndex = async (req, res) => {
         route: true,
         driver: true,
         _count: {
-          select: { passengers: true } // Count the number of passengers
-        }
+          select: { passengers: true }, // Count the number of passengers
+        },
       },
     });
     res.status(200).json(buses);
@@ -19,10 +19,9 @@ const getBusIndex = async (req, res) => {
   }
 };
 
-
 // Create a new bus
 const createBus = async (req, res) => {
-  const { busName, busNumber, route, capacity, status, driverId, routeId } =
+  const { busName, busNumber, route, capacity, status, driver, routeId } =
     req.body;
 
   try {
@@ -33,7 +32,7 @@ const createBus = async (req, res) => {
         capacity,
         route,
         status,
-        driverId,
+        driver,
         routeId,
       },
     });
@@ -70,7 +69,7 @@ const getBusById = async (req, res) => {
 // Update a bus
 const updateBus = async (req, res) => {
   const { id } = req.params;
-  const { busName, busNumber, capacity, status, driverId, routeId } = req.body;
+  const { busName, busNumber, capacity, status, driver, routeId } = req.body;
 
   try {
     const updatedBus = await prisma.bus.update({
@@ -81,7 +80,7 @@ const updateBus = async (req, res) => {
         route,
         capacity,
         status,
-        driverId,
+        driver,
         routeId,
       },
     });

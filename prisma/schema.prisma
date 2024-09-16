@@ -32,18 +32,16 @@ model RouteCoordinates {
 }
 
 model Bus {
-  id        String      @id @default(uuid())
-  route     Route       @relation(fields: [routeId], references: [id])
-  routeId   String
-  busName   String
-  busNumber String
-  capacity  String
-  status    String
-  driver    Driver?     @relation(fields: [driverId], references: [id])
-  driverId  String?
-  passengers Passenger[]  // New field to track passengers
+  id         String      @id @default(uuid())
+  route      Route       @relation(fields: [routeId], references: [id])
+  routeId    String
+  busName    String
+  busNumber  String
+  capacity   String
+  status     String
+  driver     Driver[]
+  passengers Passenger[] // New field to track passengers
 }
-
 
 model Passenger {
   id        String   @id @default(uuid())
@@ -56,23 +54,23 @@ model Passenger {
 }
 
 model Driver {
-  id     String @id @default(uuid())
+  id     String  @id @default(uuid())
   name   String
   phone  String
   status String
-  buses  Bus[]
+  bus    Bus?    @relation(fields: [busId], references: [id])
+  busId  String?
 }
 
 model Stop {
-  id        String      @id @default(uuid())
-  route     Route       @relation(fields: [routeId], references: [id])
-  routeId   String
-  stopName  String
-  latitude  String
-  longitude String
-  passengers Passenger[]  // New field to track passengers
+  id         String      @id @default(uuid())
+  route      Route       @relation(fields: [routeId], references: [id])
+  routeId    String
+  stopName   String
+  latitude   String
+  longitude  String
+  passengers Passenger[] // New field to track passengers
 }
-
 
 model RouteChannel {
   id        String @id @default(uuid())
