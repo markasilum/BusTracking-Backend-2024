@@ -8,9 +8,9 @@ const getBusIndex = async (req, res) => {
       include: {
         route: true,
         driver: true,
-        _count: {
-          select: { passengers: true } // Count the number of passengers
-        }
+          _count: {
+            select: { passengers: true } // Count the number of passengers
+          }
       },
     });
     res.status(200).json(buses);
