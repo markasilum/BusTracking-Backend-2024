@@ -5,6 +5,9 @@ const busController = require("../controllers/busControllers");
 // Get all buses
 router.get("/index", busController.getBusIndex);
 
+//get buses of a route
+router.get("/index/route/:id", busController.getBusIndexOfRoute);
+
 // Create a new bus
 router.post("/create", busController.createBus);
 
