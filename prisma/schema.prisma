@@ -37,7 +37,7 @@ model Bus {
   routeId   String
   busName   String
   busNumber String
-  capacity  String
+  capacity  Int
   status    String
   driver    Driver? @relation(fields: [driverId], references: [id])
   driverId  String?
