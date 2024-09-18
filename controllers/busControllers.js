@@ -19,6 +19,25 @@ const getBusIndex = async (req, res) => {
   }
 };
 
+const getBusIndexOfRoute = async (req, res) => {
+  const { id } = req.params;
+  console.log(id)
+  try {
+    const buses = await prisma.bus.findMany({
+      where:{
+        routeId: id
+      },
+      include: {
+        route: true, // Include related route data if needed
+        driver: true, // Include related driver data if needed
+      }, 
+    });
+    res.status(200).json(buses);
+  } catch (error) {
+    res.status(500).json({ error: "An error occurred while fetching buses" });
+  }
+};
+
 // Create a new bus
 const createBus = async (req, res) => {
   const { busName, busNumber, route, capacity, status, driver, routeId } =
@@ -110,4 +129,5 @@ module.exports = {
   getBusById,
   updateBus,
   deleteBus,
+  getBusIndexOfRoute
 };
