@@ -23,13 +23,13 @@ const getBusIndexOfRoute = async (req, res) => {
   const { id } = req.params;
   try {
     const buses = await prisma.bus.findMany({
-      where:{
-        routeId: id
+      where: {
+        routeId: id,
       },
       include: {
         route: true, // Include related route data if needed
         driver: true, // Include related driver data if needed
-      }, 
+      },
     });
     res.status(200).json(buses);
   } catch (error) {
@@ -43,11 +43,18 @@ const createBus = async (req, res) => {
     req.body;
 
   try {
+    const parsedCapacity = parseInt(capacity);
+    if (isNaN(parsedCapacity)) {
+      return res
+        .status(400)
+        .json({ error: "Capacity must be a valid integer" });
+    }
+
     const newBus = await prisma.bus.create({
       data: {
         busName,
         busNumber,
-        capacity,
+        capacity: parsedCapacity,
         route,
         status,
         driver,
@@ -128,5 +135,5 @@ module.exports = {
   getBusById,
   updateBus,
   deleteBus,
-  getBusIndexOfRoute
+  getBusIndexOfRoute,
 };
