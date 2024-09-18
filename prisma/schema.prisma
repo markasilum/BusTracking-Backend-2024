@@ -32,32 +32,44 @@ model RouteCoordinates {
 }
 
 model Bus {
-  id        String  @id @default(uuid())
-  route     Route   @relation(fields: [routeId], references: [id])
-  routeId   String
-  busName   String
-  busNumber String
-  capacity  Int
-  status    String
-  driver    Driver? @relation(fields: [driverId], references: [id])
-  driverId  String?
+  id         String      @id @default(uuid())
+  route      Route       @relation(fields: [routeId], references: [id])
+  routeId    String
+  busName    String
+  busNumber  String
+  capacity   String
+  status     String
+  driver     Driver[]
+  passengers Passenger[] // New field to track passengers
+}
+
+model Passenger {
+  id        String   @id @default(uuid())
+  rfidUID   String // Store the RFID card UID
+  scannedAt DateTime @default(now()) // Timestamp of when the card was scanned
+  bus       Bus?     @relation(fields: [busId], references: [id])
+  busId     String?
+  stop      Stop?    @relation(fields: [stopId], references: [id])
+  stopId    String?
 }
 
 model Driver {
-  id     String @id @default(uuid())
+  id     String  @id @default(uuid())
   name   String
   phone  String
   status String
-  buses  Bus[]
+  bus    Bus?    @relation(fields: [busId], references: [id])
+  busId  String?
 }
 
 model Stop {
-  id        String @id @default(uuid())
-  route     Route  @relation(fields: [routeId], references: [id])
-  routeId   String
-  stopName  String
-  latitude  String
-  longitude String
+  id         String      @id @default(uuid())
+  route      Route       @relation(fields: [routeId], references: [id])
+  routeId    String
+  stopName   String
+  latitude   String
+  longitude  String
+  passengers Passenger[] // New field to track passengers
 }
 
 model RouteChannel {
