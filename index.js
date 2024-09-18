@@ -4,6 +4,8 @@ const cors = require('cors');
 const busRoutes = require('./routes/busRoutes')
 const routeRoutes = require('./routes/routeRoutes')
 const rfidRoutes = require('./routes/rfidRoutes');
+const thingSpeak = require('./routes/thingspeakRoutes');
+
 
 const app = express();
 const port = 4000;
@@ -17,6 +19,8 @@ app.use(express.json())
 app.use('/buses', busRoutes)
 app.use('/routes', routeRoutes)
 app.use('/rfid', rfidRoutes);
+app.use('/thingspeak', thingSpeak);
+
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
