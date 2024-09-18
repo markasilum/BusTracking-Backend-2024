@@ -21,7 +21,6 @@ const getBusIndex = async (req, res) => {
 
 const getBusIndexOfRoute = async (req, res) => {
   const { id } = req.params;
-  console.log(id)
   try {
     const buses = await prisma.bus.findMany({
       where:{

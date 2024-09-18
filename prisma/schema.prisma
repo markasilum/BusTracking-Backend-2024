@@ -17,6 +17,7 @@ model Route {
   id          String             @id @default(uuid())
   routeName   String
   routeColor  String
+  routeChannel RouteChannel?
   coordinates RouteCoordinates[]
   buses       Bus[]
   stops       Stop[]
@@ -32,15 +33,16 @@ model RouteCoordinates {
 }
 
 model Bus {
-  id         String      @id @default(uuid())
-  route      Route       @relation(fields: [routeId], references: [id])
-  routeId    String
-  busName    String
-  busNumber  String
-  capacity   String
-  status     String
+  id        String  @id @default(uuid())
+  route     Route   @relation(fields: [routeId], references: [id])
+  routeId   String
+  busName   String
+  busNumber String
+  capacity  Int
+  status    String
   driver     Driver[]
-  passengers Passenger[] // New field to track passengers
+  passengers Passenger[]
+  busChannel BusChannel?
 }
 
 model Passenger {
@@ -73,16 +75,23 @@ model Stop {
 }
 
 model RouteChannel {
-  id        String @id @default(uuid())
-  channelId String
+  id          String @id @default(uuid())
+  channelId   String
+  fieldNumber String
+  route     Route  @relation(fields: [routeId], references: [id])
+  routeId   String @unique
 }
 
 model BusChannel {
   id        String @id @default(uuid())
   channelId String
+  fieldNumber String
+  bus Bus @relation(fields: [busId], references: [id])
+  busId String @unique
 }
 
 model BusLocationChannel {
   id        String @id @default(uuid())
   channelId String
+  fieldNumber String
 }
