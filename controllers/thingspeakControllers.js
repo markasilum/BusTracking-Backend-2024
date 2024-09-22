@@ -15,6 +15,21 @@ const getRouteChannel = async (req, res) => {
     }
   };
 
+  const getBusPassCount = async (req, res) => {
+    const { id } = req.params;
+    try {
+      const buses = await prisma.busChannel.findUnique({
+        where:{
+          busId: id
+        },
+      });
+      res.status(200).json(buses);
+    } catch (error) {
+      res.status(500).json({ error: "An error occurred while fetching buses" });
+    }
+  };
+
 module.exports = {
- getRouteChannel
+ getRouteChannel,
+ getBusPassCount
 }
