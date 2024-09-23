@@ -17,12 +17,14 @@ const getDriverIndex = async (req, res) => {
 
 // Create a new driver with an optional bus assignment
 const createDriver = async (req, res) => {
-  const { name, phone, status, busId } = req.body;
+  const { firstName, middleName, lastName, phone, status, busId } = req.body;
 
   try {
     const newDriver = await prisma.driver.create({
       data: {
-        name,
+        firstName,
+        middleName,
+        lastName,
         phone,
         status,
         busId,
@@ -64,13 +66,15 @@ const getDriverById = async (req, res) => {
 // Update a driver with optional bus assignment
 const updateDriver = async (req, res) => {
   const { id } = req.params;
-  const { name, phone, status, busId } = req.body;
+  const { firstName, middleName, lastName, phone, status, busId } = req.body;
 
   try {
     const updatedDriver = await prisma.driver.update({
       where: { id },
       data: {
-        name,
+        firstName,
+        middleName,
+        lastName,
         phone,
         status,
         busId,
