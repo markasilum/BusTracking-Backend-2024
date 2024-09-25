@@ -56,12 +56,15 @@ model Passenger {
 }
 
 model Driver {
-  id     String  @id @default(uuid())
-  name   String
-  phone  String
-  status String
-  bus    Bus?    @relation(fields: [busId], references: [id])
-  busId  String?
+  id        String   @id @default(uuid())
+  name      String
+  phone     String
+  status    String
+  email     String   @unique
+  role      String   @default("driver") // Default role is "driver"
+  bus       Bus?     @relation(fields: [busId], references: [id])
+  busId     String?
+  createdAt DateTime @default(now())
 }
 
 model Stop {
