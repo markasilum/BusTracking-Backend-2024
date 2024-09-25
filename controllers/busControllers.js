@@ -23,13 +23,13 @@ const getBusIndexOfRoute = async (req, res) => {
   const { id } = req.params;
   try {
     const buses = await prisma.bus.findMany({
-      where:{
+      where: {
         routeId: id
       },
       include: {
         route: true, // Include related route data if needed
         driver: true, // Include related driver data if needed
-      }, 
+      },
     });
     res.status(200).json(buses);
   } catch (error) {
