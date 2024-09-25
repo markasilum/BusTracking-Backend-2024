@@ -18,15 +18,22 @@ model Route {
   routeName   String
   routeColor  String
   routeChannel RouteChannel?
-  coordinates RouteCoordinates[]
+  paths  RoutePath[]
   buses       Bus[]
   stops       Stop[]
 }
 
-model RouteCoordinates {
+model RoutePath {
   id         String @id @default(uuid())
   routeId    String // Foreign key for the Route model
   route      Route  @relation(fields: [routeId], references: [id])
+  coordinates  RouteCoordinates[]
+}
+
+model RouteCoordinates {
+  id         String @id @default(uuid())
+  pathId    String // Foreign key for the Route model
+  path      RoutePath  @relation(fields: [pathId], references: [id])
   pointOrder Int
   latitude   Float
   longitude  Float
