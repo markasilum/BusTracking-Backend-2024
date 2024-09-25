@@ -2,6 +2,7 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 const getRouteIndex = async(req, res) => {
+  console.log("get all routes")
     try {
         const routes = await prisma.route.findMany({
           orderBy:{
@@ -10,7 +11,7 @@ const getRouteIndex = async(req, res) => {
         });
         res.status(200).json(routes);
       } catch (error) {
-        res.status(500).json({ error: 'An error occurred while fetching buses' });
+        res.status(500).json({ error: 'An error occurred while fetching routes' });
       }
     
 }
@@ -20,20 +21,24 @@ const getRoutesCoordinates = async(req, res) => {
   try {
       const routes = await prisma.route.findMany({
         include:{
-          coordinates: {
-            orderBy:{
-              pointOrder:"asc"
-            },
-            select: {
-              pointOrder: true,
-              latitude: true,
-              longitude: true
-            },
-            
+          paths:{
+            include:{
+              coordinates: {
+                orderBy:{
+                  pointOrder:"asc"
+                },
+                select: {
+                  pointOrder: true,
+                  latitude: true,
+                  longitude: true
+                },
+              }
+            }
           }
         }
       });
       res.status(200).json(routes);
+      console.log(routes)
     } catch (error) {
       res.status(500).json({ error: 'An error occurred while fetching buses' });
     }
@@ -41,16 +46,25 @@ const getRoutesCoordinates = async(req, res) => {
 }
 
 const createRoute = async (req,res) => {
-  const { routeName, routeColor, coordinates } = req.body;
+  const { routeName, routeColor, paths } = req.body;
 
+  // console.log("Received paths:", JSON.stringify(paths, null, 2));
   try {
-    // Create a new route
+    // // Create a new route
     const newRoute = await prisma.route.create({
       data: {
         routeName,
         routeColor,
-        coordinates: {
-          create: coordinates, // `coordinates` should be an array of objects
+        paths: {
+          create: paths.map((path) => ({
+            coordinates: {
+              create: path.coordinates.map((coordinate) => ({
+                pointOrder: coordinate.pointOrder,
+                latitude: coordinate.latitude,
+                longitude: coordinate.longitude,
+              })),
+            },
+          })),
         },
       },
     });
