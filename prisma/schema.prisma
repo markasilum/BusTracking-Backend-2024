@@ -45,6 +45,13 @@ model Bus {
   busChannel BusChannel?
 }
 
+model User {
+  id         String  @id @default(uuid())
+  name       String
+  email      String @unique
+  role       String
+}
+
 model Passenger {
   id        String   @id @default(uuid())
   rfidUID   String // Store the RFID card UID

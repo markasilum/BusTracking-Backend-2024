@@ -6,6 +6,7 @@ const routeRoutes = require('./routes/routeRoutes')
 const rfidRoutes = require('./routes/rfidRoutes');
 const driverRoutes = require("./routes/driverRoutes");
 const thingSpeak = require('./routes/thingspeakRoutes');
+const userRoutes = require('./routes/usersRoutes');
 
 const app = express();
 const port = 4000;
@@ -25,7 +26,7 @@ app.use('/routes', routeRoutes)
 app.use('/rfid', rfidRoutes);
 app.use("/drivers", driverRoutes);
 app.use('/thingspeak', thingSpeak);
-
+app.use('/users', userRoutes );
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
