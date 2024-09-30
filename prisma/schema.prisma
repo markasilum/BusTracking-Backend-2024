@@ -14,52 +14,93 @@ datasource db {
 }
 
 model Route {
-  id        String @id @default(uuid())
-  routeName String
-  routeColor String
-  coordinates RouteCoordinates[]
-  buses     Bus[]
-  stops     Stop[]
+  id           String             @id @default(uuid())
+  routeName    String
+  routeColor   String
+  routeChannel RouteChannel?
+  coordinates  RouteCoordinates[]
+  buses        Bus[]
+  stops        Stop[]
 }
 
 model RouteCoordinates {
-  id        String  @id @default(uuid())
-  routeId   String  // Foreign key for the Route model
-  route     Route   @relation(fields: [routeId], references: [id])
+  id         String @id @default(uuid())
+  routeId    String // Foreign key for the Route model
+  route      Route  @relation(fields: [routeId], references: [id])
   pointOrder Int
-  latitude  Float
-  longitude Float
+  latitude   Float
+  longitude  Float
 }
 
 model Bus {
-  id        String @id @default(uuid())
-  route     Route  @relation(fields: [routeId], references: [id])
-  routeId   String
-  busNumber String
-  capacity  String
-  status    String
+  id         String      @id @default(uuid())
+  route      Route       @relation(fields: [routeId], references: [id])
+  routeId    String
+  busName    String
+  busNumber  String
+  capacity   Int
+  status     String
+  driver     Driver[]
+  passengers Passenger[]
+  busChannel BusChannel?
+}
+
+model User {
+  id         String  @id @default(uuid())
+  name       String
+  email      String @unique
+  role       String
+}
+
+model Passenger {
+  id        String   @id @default(uuid())
+  rfidUID   String // Store the RFID card UID
+  scannedAt DateTime @default(now()) // Timestamp of when the card was scanned
+  bus       Bus?     @relation(fields: [busId], references: [id])
+  busId     String?
+  stop      Stop?    @relation(fields: [stopId], references: [id])
+  stopId    String?
+}
+
+model Driver {
+  id         String  @id @default(uuid())
+  firstName  String?
+  middleName String?
+  lastName   String?
+  phone      String
+  status     String
+  bus        Bus?    @relation(fields: [busId], references: [id])
+  busId      String?
 }
 
 model Stop {
-  id        String @id @default(uuid())
-  route     Route  @relation(fields: [routeId], references: [id])
-  routeId   String
-  stopName  String
-  latitude  String
-  longitude String
+  id         String      @id @default(uuid())
+  route      Route       @relation(fields: [routeId], references: [id])
+  routeId    String
+  stopName   String
+  latitude   String
+  longitude  String
+  passengers Passenger[] // New field to track passengers
 }
 
 model RouteChannel {
-  id        String @id @default(uuid())
-  channelId String
+  id          String @id @default(uuid())
+  channelId   String
+  fieldNumber String
+  route       Route  @relation(fields: [routeId], references: [id])
+  routeId     String @unique
 }
 
 model BusChannel {
-  id        String @id @default(uuid())
-  channelId String
+  id          String @id @default(uuid())
+  channelId   String
+  fieldNumber String
+  bus         Bus    @relation(fields: [busId], references: [id])
+  busId       String @unique
 }
 
 model BusLocationChannel {
-  id        String @id @default(uuid())
-  channelId String
+  id          String @id @default(uuid())
+  channelId   String
+  fieldNumber String
 }
