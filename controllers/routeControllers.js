@@ -7,6 +7,9 @@ const getRouteIndex = async(req, res) => {
           orderBy:{
             routeName:"asc"
           },
+          include:{
+            buses: true
+          }
         });
         res.status(200).json(routes);
       } catch (error) {
@@ -19,6 +22,35 @@ const getRouteIndex = async(req, res) => {
 const getRoutesCoordinates = async(req, res) => {
   try {
       const routes = await prisma.route.findMany({
+        include:{
+          coordinates: {
+            orderBy:{
+              pointOrder:"asc"
+            },
+            select: {
+              pointOrder: true,
+              latitude: true,
+              longitude: true
+            },
+            
+          }
+        }
+      });
+      res.status(200).json(routes);
+    } catch (error) {
+      res.status(500).json({ error: 'An error occurred while fetching buses' });
+    }
+  
+}
+
+//index of coordinates
+const getRoute = async(req, res) => {
+  const{id} = req.params
+  try {
+      const routes = await prisma.route.findUnique({
+        where:{
+          id: id
+        },
         include:{
           coordinates: {
             orderBy:{
@@ -66,5 +98,6 @@ const createRoute = async (req,res) => {
 module.exports = {
     getRouteIndex,
     getRoutesCoordinates,
+    getRoute,
     createRoute
 }
