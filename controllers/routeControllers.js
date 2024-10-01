@@ -96,7 +96,6 @@ const createRoute = async (req,res) => {
 
 const updateRoute = async (req,res) => {
   const { id, routeName, routeColor, coordinates } = req.body;
-  console.log(coordinates)
   try {
     // Create a new route
     const updateRoute = await prisma.route.update({
