@@ -6,6 +6,6 @@ router.get("/index", routeController.getRouteIndex );
 router.get("/index/coordinates", routeController.getRoutesCoordinates );
 router.get("/get-route/:id", routeController.getRoute );
 router.post("/create", routeController.createRoute );
-
+router.post("/update", routeController.updateRoute );
 
 module.exports = router;
