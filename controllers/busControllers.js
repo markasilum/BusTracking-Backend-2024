@@ -93,8 +93,8 @@ const getBusById = async (req, res) => {
 
 // Update a bus
 const updateBus = async (req, res) => {
-  const { id } = req.params;
-  const { busName, busNumber, capacity, status, driver, routeId } = req.body;
+  const {id, busName, busNumber, capacity, status, driver, routeId } = req.body;
+  console.log(req.body)
 
   try {
     const updatedBus = await prisma.bus.update({
@@ -102,15 +102,15 @@ const updateBus = async (req, res) => {
       data: {
         busName,
         busNumber,
-        route,
         capacity,
         status,
-        driver,
         routeId,
+         // driver,
       },
     });
     res.status(200).json(updatedBus);
   } catch (error) {
+    console.log(error)
     res.status(500).json({ error: "An error occurred while updating the bus" });
   }
 };

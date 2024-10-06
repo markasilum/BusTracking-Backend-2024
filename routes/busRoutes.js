@@ -15,7 +15,7 @@ router.post("/create", busController.createBus);
 router.get("/:id", busController.getBusById);
 
 // Update a bus by ID
-router.put("/:id", busController.updateBus);
+router.put("/update", busController.updateBus);
 
 // Delete a bus by ID
 router.delete("/:id", busController.deleteBus);
