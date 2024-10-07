@@ -85,6 +85,7 @@ model Stop {
 
 model RouteChannel {
   id          String @id @default(uuid())
+  apiKey      String?
   channelId   String
   fieldNumber String
   route       Route  @relation(fields: [routeId], references: [id])
