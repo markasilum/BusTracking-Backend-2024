@@ -120,7 +120,6 @@ const updateBus = async (req, res) => {
   }
 };
 
-// Delete a bus
 const deleteBus = async (req, res) => {
   const { id } = req.params;
 
