@@ -15,7 +15,6 @@ const getDriverIndex = async (req, res) => {
   }
 };
 
-// Create a new driver with an optional bus assignment
 const createDriver = async (req, res) => {
   const { firstName, middleName, lastName, phone, status, bus } = req.body;
 
@@ -63,7 +62,6 @@ const getDriverById = async (req, res) => {
   }
 };
 
-// Update a driver with optional bus assignment
 const updateDriver = async (req, res) => {
   const { id, firstName, middleName, lastName, phone, status, bus } = req.body;
    console.log(req.body)
