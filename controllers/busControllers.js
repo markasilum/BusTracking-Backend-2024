@@ -39,9 +39,10 @@ const getBusIndexOfRoute = async (req, res) => {
 
 // Create a new bus
 const createBus = async (req, res) => {
-  const { busName, busNumber, route, capacity, status, driver, routeId } =
+  const { busName, busNumber, capacity, status, driverId, routeId } =
     req.body;
 
+    console.log(req.body)
   try {
     const parsedCapacity = parseInt(capacity);
     if (isNaN(parsedCapacity)) {
@@ -55,10 +56,17 @@ const createBus = async (req, res) => {
         busName,
         busNumber,
         capacity: parsedCapacity,
-        route,
         status,
-        driver,
-        routeId,
+        driver:{
+          connect:{
+            id: driverId
+          }
+        },
+        route:{
+          connect:{
+            id: routeId 
+          }
+        }  
       },
     });
     res.status(201).json(newBus);
@@ -104,10 +112,14 @@ const updateBus = async (req, res) => {
         busNumber,
         capacity,
         status,
-        routeId,
+        route:{
+          connect:{
+            id: routeId
+          }
+        },
         driver:{
           connect: {
-            id: driverId
+            id: driverId 
           }
         }
       },

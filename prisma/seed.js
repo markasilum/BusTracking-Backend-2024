@@ -70,6 +70,32 @@ async function main() {
   });
 
   console.log('Route 2 created:', route2);
+
+  // Create admin users
+  const adminUsers = [
+    {
+      email: "paololuisramirez@gmail.com",
+      name: "Paolo Luis Ramirez",
+      role: "admin",
+    },
+    {
+      email: "mecasilum@addu.edu.ph",
+      name: "Mark Asilum",
+      role: "admin",
+    },
+    {
+      email: "sevchavez@addu.edu.ph",
+      name: "Sean Chavez",
+      role: "admin",
+    }
+  ];
+
+  for (const user of adminUsers) {
+    const createdUser = await prisma.user.create({
+      data: user,
+    });
+    console.log('Admin user created:', createdUser);
+  }
 }
 
 main()
