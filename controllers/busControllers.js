@@ -93,7 +93,7 @@ const getBusById = async (req, res) => {
 
 // Update a bus
 const updateBus = async (req, res) => {
-  const {id, busName, busNumber, capacity, status, driver, routeId } = req.body;
+  const {id, busName, busNumber, capacity, status, driverId, routeId } = req.body;
   console.log(req.body)
 
   try {
@@ -105,7 +105,11 @@ const updateBus = async (req, res) => {
         capacity,
         status,
         routeId,
-         // driver,
+        driver:{
+          connect: {
+            id: driverId
+          }
+        }
       },
     });
     res.status(200).json(updatedBus);

@@ -76,6 +76,11 @@ const updateDriver = async (req, res) => {
         phone,
         status,
         busId,
+        // bus:{
+        //   connect: {
+        //     id: busId
+        //   }
+        // }
       },
     });
     res.status(200).json(updatedDriver);
