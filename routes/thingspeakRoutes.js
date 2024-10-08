@@ -3,7 +3,7 @@ const router = express.Router();
 const thingSpeakController = require('../controllers/thingspeakControllers');
 
 router.get("/channel/:id", thingSpeakController.getRouteChannel);
-router.get("/passengers/route/:id", thingSpeakController.getRoutePassengers);
+router.get("/passengers/route", thingSpeakController.getRoutePassengers);
 
 
 
