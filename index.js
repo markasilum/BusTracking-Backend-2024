@@ -7,6 +7,7 @@ const rfidRoutes = require('./routes/rfidRoutes');
 const driverRoutes = require("./routes/driverRoutes");
 const thingSpeak = require('./routes/thingspeakRoutes');
 const userRoutes = require('./routes/usersRoutes');
+const geofenceRoutes = require('./routes/geofenceRoutes');
 
 const app = express();
 const port = 4000;
@@ -26,7 +27,8 @@ app.use('/routes', routeRoutes)
 app.use('/rfid', rfidRoutes);
 app.use("/drivers", driverRoutes);
 app.use('/thingspeak', thingSpeak);
-app.use('/users', userRoutes );
+app.use('/users', userRoutes);
+app.use('/geofence', geofenceRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
