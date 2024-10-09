@@ -40,7 +40,8 @@ model Bus {
   busNumber  String
   capacity   Int
   status     String
-  driver     Driver[]
+  driver     Driver? @relation(fields: [driverId], references: [id])
+  driverId    String @unique
   passengers Passenger[]
   busChannel BusChannel?
 }
@@ -69,8 +70,7 @@ model Driver {
   lastName   String?
   phone      String
   status     String
-  bus        Bus?    @relation(fields: [busId], references: [id])
-  busId      String?
+  bus        Bus?
 }
 
 model Stop {
@@ -85,6 +85,7 @@ model Stop {
 
 model RouteChannel {
   id          String @id @default(uuid())
+  apiKey      String?
   channelId   String
   fieldNumber String
   route       Route  @relation(fields: [routeId], references: [id])

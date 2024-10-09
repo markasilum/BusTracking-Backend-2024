@@ -40,8 +40,6 @@ const getBusIndexOfRoute = async (req, res) => {
 // Create a new bus
 const createBus = async (req, res) => {
   const { busName, busNumber, capacity, status, driverId, routeId } = req.body;
-
-  console.log(req.body);
   try {
     const parsedCapacity = parseInt(capacity);
     if (isNaN(parsedCapacity)) {
@@ -56,16 +54,16 @@ const createBus = async (req, res) => {
         busNumber,
         capacity: parsedCapacity,
         status,
-        driver: {
-          connect: {
-            id: driverId,
-          },
+        driver:{
+          connect:{
+            id: driverId
+          }
         },
-        route: {
-          connect: {
-            id: routeId,
-          },
-        },
+        route:{
+          connect:{
+            id: routeId 
+          }
+        }  
       },
     });
     res.status(201).json(newBus);
@@ -100,10 +98,8 @@ const getBusById = async (req, res) => {
 
 // Update a bus
 const updateBus = async (req, res) => {
-  const { id, busName, busNumber, capacity, status, driverId, routeId } =
-    req.body;
-  console.log(req.body);
-
+  const {id, busName, busNumber, capacity, status, driverId, routeId } = req.body;
+ 
   try {
     const updatedBus = await prisma.bus.update({
       where: { id },
@@ -112,21 +108,20 @@ const updateBus = async (req, res) => {
         busNumber,
         capacity,
         status,
-        route: {
-          connect: {
-            id: routeId,
-          },
+        route:{
+          connect:{
+            id: routeId
+          }
         },
-        driver: {
+        driver:{
           connect: {
-            id: driverId,
-          },
-        },
+            id: driverId 
+          }
+        }
       },
     });
     res.status(200).json(updatedBus);
   } catch (error) {
-    console.log(error);
     res.status(500).json({ error: "An error occurred while updating the bus" });
   }
 };
