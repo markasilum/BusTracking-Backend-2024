@@ -14,6 +14,7 @@ router.get("/:id", driverController.getDriverById);
 // Update a driver by ID
 router.put("/update", driverController.updateDriver);
 
+
 // Delete a driver by ID
 router.delete("/:id", driverController.deleteDriver);
 

@@ -39,7 +39,37 @@ const getUser = async (req, res) => {
     }
   };
 
+  const userIndex = async (req, res) => {
+    try {
+        const user = await prisma.user.findMany({});
+        res.json(user);
+    } catch (error) {
+        console.error(error); // Log the error for debugging
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+const updateRole = async (req, res) => {
+    const {id, role} = req.body
+    try {
+        const user = await prisma.user.update({
+            where:{
+                id: id
+            },
+            data:{
+                role
+            }
+        });
+        res.json(user);
+    } catch (error) {
+        console.error(error); // Log the error for debugging
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
 module.exports = {
     getUser,
-    createUser
+    createUser,
+    userIndex,
+    updateRole
 }

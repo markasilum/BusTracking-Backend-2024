@@ -17,8 +17,6 @@ const getRouteChannel = async (req, res) => {
 
   
   const getRoutePassengers = async (req, res) => {
-    const { id } = req.params;
-    
     try {
       // Fetch busesChannels data from Prisma
       const busesChannels = await prisma.route.findMany({
@@ -45,7 +43,7 @@ const getRouteChannel = async (req, res) => {
           // Generate URLs for each bus and push them to the corresponding routeId
           channel.buses.forEach(bus => {
             const { channelId, fieldNumber } = bus.busChannel;
-            const url = `https://api.thingspeak.com/channels/${channelId}/fields/${fieldNumber}.json`;
+            const url = `https://api.thingspeak.com/channels/${channelId}/fields/${fieldNumber}.json?results=10`;
             urlsByRouteId[routeId].push(url);
           });
         });
@@ -53,115 +51,102 @@ const getRouteChannel = async (req, res) => {
         return urlsByRouteId;
       };
       
-  
-      // // Function to get the last non-null value from the 'feeds' array for a specific fieldNumber
-      function getLastNonNullFeed(feeds, fieldNumber) {
-        const fieldKey = `field${fieldNumber}`; // Dynamically generate the field key (field1, field2, etc.)
-        for (let i = feeds.length - 1; i >= 0; i--) {
-          if (feeds[i][fieldKey] !== null) {
-            return feeds[i][fieldKey]; // Return the last non-null value for the specific field
-          }
-        }
-        return null; // Return null if no non-null value is found
-      }
-  
       // Generate the URLs
       const urls = generateUrlsByRouteId(busesChannels);
-  
-      // Fetch data from the URLs and get the total of last non-null values for each fieldNumber
-      const fetchDataFromURLs = async (urlsByRoute, busesChannels) => {
-        let totalByRoute = {};
-      
-        // Iterate over each route and its corresponding URLs
-        const routePromises = Object.keys(urlsByRoute).map(async (routeId) => {
-          const urls = urlsByRoute[routeId];
 
-          // Fetch data for each URL in the current route
-          const fetchPromises = urls.map(async (url) => {
-            try {
-              const response = await fetch(url);
-              const data = await response.json();
-        
-              // Find the matching busChannel for the current URL
-              let fieldNumber;
-
-              busesChannels.forEach((channel) => {
-                if (channel.id === routeId) { // Check if it's the correct route
-                  channel.buses.forEach((bus) => {
-                    const currentChannelId = url.split('/')[4]; // Extract channelId from URL
-
-                    if (bus.busChannel && bus.busChannel.channelId === currentChannelId) {
-                      fieldNumber = bus.busChannel.fieldNumber; // Correct fieldNumber for this bus
-
-                    }
-                  });
-                }
-              });
-              console.log(fieldNumber) 
-
-
-        
-              // Check if 'feeds' exists in the data and get the last non-null feed for the specific fieldNumber
-              if (data.feeds && Array.isArray(data.feeds)) {
-                const lastNonNullFeed = getLastNonNullFeed(data.feeds, fieldNumber);
-                return lastNonNullFeed ? parseInt(lastNonNullFeed, 10) : 0; // Return parsed integer or 0 if null
-              } else {
-                return 0; // Return 0 if no feeds found
-              }
-            } catch (error) {
-              console.error(`Error fetching data for URL ${url}:`, error);
-              return 0; // Return 0 on error
-            }
-          });
+      const fetchUrls = async (urlObject) => {
+        const results = {};
       
-          // Wait for all fetch requests to complete for this route
-          const results = await Promise.all(fetchPromises);
+        for (const [key, urls] of Object.entries(urlObject)) {
+          results[key] = [];
       
-          // Sum the results for this specific route
-          const totalForRoute = results.reduce((acc, value) => acc + value, 0);
+          if (urls.length > 0) {
+            const requests = urls.map(url => 
+              fetch(url)
+                .then(response => {
+                  if (!response.ok) {
+                    throw new Error(`Request failed with status ${response.status}`);
+                  }
+                  return response.json();
+                })
+                .catch(err => null) // Handle errors by returning null
+            );
       
-          // Store the total for the current route
-          totalByRoute[routeId] = totalForRoute;
-        });
+            const responses = await Promise.all(requests);
+            results[key] = responses.filter(response => response !== null); // Filter out failed requests
+          }
+        }
       
-        // Wait for all route fetches to complete
-        await Promise.all(routePromises);
-      
-        return totalByRoute; // Return the totals grouped by routeId
+        return results;
       };
-      
-      
-      
-  
-      // // Fetch data for all the generated URLs and calculate the total
-      const totalPassengers = await fetchDataFromURLs(urls, busesChannels);
 
-      // const routeChannel = await prisma.routeChannel.findUnique({
-      //   where: {
-      //     routeId: id,
-      //   }, 
-      // });  
-  
-      // Send total to ThingSpeak channel
-    // const sendTotalToThingSpeak = async (total) => {
-    //   const thingspeakURL = `https://api.thingspeak.com/update?api_key=${routeChannel.apiKey}&field${routeChannel.fieldNumber}=${total}`;
-    //   try {
-    //     const response = await fetch(thingspeakURL, { method: 'POST' });
-    //     if (response.ok) {
-    //       console.log(`Total sent to ThingSpeak: ${total}`);
-    //     } else {
-    //       console.log('Failed to send total to ThingSpeak.');
-    //     }
-    //   } catch (error) {
-    //     console.error('Error while sending data to ThingSpeak:', error);
-    //   }
-    // };
+      const data = await fetchUrls(urls);
 
-    // // Send the total to ThingSpeak
-    // await sendTotalToThingSpeak(totalPassengers);
+      // Initialize an object to hold the last non-null values for each URL
+      const lastNonNullValues = {};
+
+      // Function to extract last non-null values from feeds
+      const extractLastNonNullValues = (channels) => {
+          return channels.reduce((acc, channel) => {
+              const feeds = channel.feeds;
+              feeds.forEach(feed => {
+                  Object.entries(feed).forEach(([key, value]) => {
+                      if (key !== 'created_at' && key !== 'entry_id' && value !== null) {
+                          acc[key] = value;  // Update only if value is non-null
+                      }
+                  });
+              });
+              return acc;
+          }, {});
+      };
+
+      // Process each URL in the data object
+      for (const [url, channels] of Object.entries(data)) {
+          lastNonNullValues[url] = extractLastNonNullValues(channels);
+      }
+
+      const summedValues = {};
+
+      // Function to sum numeric values in an object
+      const sumValues = (fields) => {
+          return Object.values(fields).reduce((sum, value) => {
+              const numericValue = parseFloat(value);
+              return !isNaN(numericValue) ? sum + numericValue : sum;
+          }, 0);
+      };
+
+      // Calculate summed values for each URL
+      for (const [url, fields] of Object.entries(lastNonNullValues)) {
+          const sum = sumValues(fields);
+          summedValues[url] = sum > 0 ? [sum] : {};
+      }
+
+      const routeChannel = await prisma.routeChannel.findMany({});  
+  
+      const sendTotalToThingSpeak = async (route, total) => {
+        const thingspeakURL = `https://api.thingspeak.com/update?api_key=${route.apiKey}&field${route.fieldNumber}=${total}`;
+        try {
+            const response = await fetch(thingspeakURL, { method: 'GET' });
+            if (response.ok) {
+                console.log(thingspeakURL);
+            } else {
+                console.log(`Failed to send total to ThingSpeak for route ${route.routeId}.`);
+            }
+        } catch (error) {
+            console.error(`Error while sending data to ThingSpeak for route ${route.routeId}:`, error);
+        }
+    };
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    // Iterate through each route and send the total
+    for (const route of routeChannel) {
+      const total = summedValues[route.routeId] ? summedValues[route.routeId][0] : 0; // Get total for the current route
+      await sendTotalToThingSpeak(route, total);
+      await delay(15000); // Wait for 15 seconds before the next iteration
+    }
 
     // Send the total as the response
-    res.status(200).json({ totalPassengers });
+    res.status(200).json( summedValues );
   
     } catch (error) {
       res.status(500).json({ error: "An error occurred while fetching buses" });
