@@ -43,7 +43,7 @@ const getRouteChannel = async (req, res) => {
           // Generate URLs for each bus and push them to the corresponding routeId
           channel.buses.forEach(bus => {
             const { channelId, fieldNumber } = bus.busChannel;
-            const url = `https://api.thingspeak.com/channels/${channelId}/fields/${fieldNumber}.json?results=10`;
+            const url = `https://api.thingspeak.com/channels/${channelId}/fields/${fieldNumber}.json`;
             urlsByRouteId[routeId].push(url);
           });
         });
@@ -124,6 +124,7 @@ const getRouteChannel = async (req, res) => {
       const routeChannel = await prisma.routeChannel.findMany({});  
   
       const sendTotalToThingSpeak = async (route, total) => {
+        // console.log(route, total)
         const thingspeakURL = `https://api.thingspeak.com/update?api_key=${route.apiKey}&field${route.fieldNumber}=${total}`;
         try {
             const response = await fetch(thingspeakURL, { method: 'GET' });
@@ -138,18 +139,21 @@ const getRouteChannel = async (req, res) => {
     };
     const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-    // Iterate through each route and send the total
+    // // Iterate through each route and send the total
     for (const route of routeChannel) {
       const total = summedValues[route.routeId] ? summedValues[route.routeId][0] : 0; // Get total for the current route
       await sendTotalToThingSpeak(route, total);
       await delay(15000); // Wait for 15 seconds before the next iteration
     }
 
+    // console.log("sent route passengers")
+
     // Send the total as the response
-    res.status(200).json( summedValues );
+    // res.status(200).json( summedValues );
   
     } catch (error) {
-      res.status(500).json({ error: "An error occurred while fetching buses" });
+      // res.status(500).json({ error: "An error occurred while fetching buses" });
+      console.log(error)
     }
   };
   
