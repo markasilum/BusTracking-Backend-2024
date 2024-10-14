@@ -226,99 +226,103 @@ const getRouteChannel = async (req, res) => {
 
   }
 
-  const getBusLocation = async (req, res) =>{
-
+  const getBusLocation = async (req, res) => {
     try {
-
       const buses = await prisma.bus.findMany({
         include: {
           route: true,
-          busLocation: true
-          },
+          busLocation: true,
+        },
       });
 
-    // Fetch data from each URL and return the result
-const fetchDataForBuses = async () => {
-  const busDataPromises = buses.map(async (bus) => {
-      const { busLocation } = bus; // Destructure busLocation from the bus object
+      // Fetch data from each URL and return the result
+      const fetchDataForBuses = async () => {
+        const busDataPromises = buses.map(async (bus) => {
+          const { busLocation } = bus; // Destructure busLocation from the bus object
 
-      // Proceed only if busLocation is not null
-      if (busLocation) {
-          const latUrl = `https://api.thingspeak.com/channels/${busLocation.channelId}/fields/${busLocation.latFieldNumber}.json`; // URL for latitude
-          const longUrl = `https://api.thingspeak.com/channels/${busLocation.channelId}/fields/${busLocation.longFieldNumber}.json`; // URL for longitude
+          // Proceed only if busLocation is not null
+          if (busLocation) {
+            const latUrl = `https://api.thingspeak.com/channels/${busLocation.channelId}/fields/${busLocation.latFieldNumber}.json`; // URL for latitude
+            const longUrl = `https://api.thingspeak.com/channels/${busLocation.channelId}/fields/${busLocation.longFieldNumber}.json`; // URL for longitude
 
-          try {
+            try {
               const [latResponse, longResponse] = await Promise.all([
-                  fetch(latUrl),
-                  fetch(longUrl),
+                fetch(latUrl),
+                fetch(longUrl),
               ]);
 
               // Check if responses are okay
               if (!latResponse.ok) {
-                  throw new Error(`Failed to fetch latitude data for bus ID ${bus.id}`);
+                throw new Error(
+                  `Failed to fetch latitude data for bus ID ${bus.id}`
+                );
               }
               if (!longResponse.ok) {
-                  throw new Error(`Failed to fetch longitude data for bus ID ${bus.id}`);
+                throw new Error(
+                  `Failed to fetch longitude data for bus ID ${bus.id}`
+                );
               }
 
               const latData = await latResponse.json();
               const longData = await longResponse.json();
-              
+
               const latFeed = latData.feeds;
               const longFeed = longData.feeds;
 
               // Find the last non-null value for latitude
               let lastLatValue = null;
               for (let i = latFeed.length - 1; i >= 0; i--) {
-                  const entry = latFeed[i];
-                  const latValue = entry[`field${busLocation.latFieldNumber}`]; // Use dynamic field name
+                const entry = latFeed[i];
+                const latValue = entry[`field${busLocation.latFieldNumber}`]; // Use dynamic field name
 
-                  if (latValue !== null) {
-                      lastLatValue = latValue; // Update last latitude value
-                      break; // Exit loop once last non-null value is found
-                  }
+                if (latValue !== null) {
+                  lastLatValue = latValue; // Update last latitude value
+                  break; // Exit loop once last non-null value is found
+                }
               }
 
               // Find the last non-null value for longitude
               let lastLongValue = null;
               for (let i = longFeed.length - 1; i >= 0; i--) {
-                  const entry = longFeed[i];
-                  const longValue = entry[`field${busLocation.longFieldNumber}`]; // Use dynamic field name
+                const entry = longFeed[i];
+                const longValue = entry[`field${busLocation.longFieldNumber}`]; // Use dynamic field name
 
-                  if (longValue !== null) {
-                      lastLongValue = longValue; // Update last longitude value
-                      break; // Exit loop once last non-null value is found
-                  }
+                if (longValue !== null) {
+                  lastLongValue = longValue; // Update last longitude value
+                  break; // Exit loop once last non-null value is found
+                }
               }
 
               // Return bus data without busLocation and include lat/long values
               const { busLocation: _, ...busData } = bus; // Omit busLocation from bus data
-              return { ...busData, latitude: lastLatValue, longitude: lastLongValue }; // Return bus data with lat/long values
-          } catch (error) {
+              return {
+                ...busData,
+                latitude: lastLatValue,
+                longitude: lastLongValue,
+              }; // Return bus data with lat/long values
+            } catch (error) {
               console.error(`Error fetching data for bus ID ${bus.id}:`, error);
               return { id: bus.id, error: error.message }; // Return error if any
+            }
+          } else {
+            // If busLocation is null, return bus data with null lat/long
+            const { busLocation: _, ...busData } = bus; // Omit busLocation from bus data
+            return { ...busData, latitude: null, longitude: null };
           }
-      } else {
-          // If busLocation is null, return bus data with null lat/long
-          const { busLocation: _, ...busData } = bus; // Omit busLocation from bus data
-          return { ...busData, latitude: null, longitude: null };
-      }
-  });
+        });
 
-  // Wait for all fetch requests to complete and return the result
-  const allBusData = await Promise.all(busDataPromises);
-  return allBusData;
-};
+        // Wait for all fetch requests to complete and return the result
+        const allBusData = await Promise.all(busDataPromises);
+        return allBusData;
+      };
 
-const data = await fetchDataForBuses();
-res.send(data);
-
-      
+      const data = await fetchDataForBuses();
+      res.send(data);
     } catch (error) {
-      res.send(error)
-      console.log(error)
+      res.send(error);
+      console.log(error);
     }
-  }
+  };
 
   
   
