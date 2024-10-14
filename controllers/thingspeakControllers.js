@@ -232,6 +232,7 @@ const getRouteChannel = async (req, res) => {
 
       const buses = await prisma.bus.findMany({
         include: {
+          route: true,
           busLocation: true
           },
       });
