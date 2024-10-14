@@ -54,16 +54,20 @@ const createBus = async (req, res) => {
         busNumber,
         capacity: parsedCapacity,
         status,
-        driver:{
-          connect:{
-            id: driverId
-          }
-        },
-        route:{
-          connect:{
-            id: routeId 
-          }
-        }  
+        ...(driverId && {
+          driver: {
+            connect: {
+              id: driverId,
+            },
+          },
+        }),
+        ...(routeId && {
+          route: {
+            connect: {
+              id: routeId,
+            },
+          },
+        }),
       },
     });
     res.status(201).json(newBus);
@@ -98,8 +102,9 @@ const getBusById = async (req, res) => {
 
 // Update a bus
 const updateBus = async (req, res) => {
-  const {id, busName, busNumber, capacity, status, driverId, routeId } = req.body;
- 
+  const { id, busName, busNumber, capacity, status, driverId, routeId } =
+    req.body;
+
   try {
     const updatedBus = await prisma.bus.update({
       where: { id },
@@ -108,16 +113,16 @@ const updateBus = async (req, res) => {
         busNumber,
         capacity,
         status,
-        route:{
-          connect:{
-            id: routeId
-          }
-        },
-        driver:{
+        route: {
           connect: {
-            id: driverId 
-          }
-        }
+            id: routeId,
+          },
+        },
+        driver: {
+          connect: {
+            id: driverId,
+          },
+        },
       },
     });
     res.status(200).json(updatedBus);

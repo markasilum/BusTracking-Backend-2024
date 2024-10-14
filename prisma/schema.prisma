@@ -40,17 +40,17 @@ model Bus {
   busNumber  String
   capacity   Int
   status     String
-  driver     Driver? @relation(fields: [driverId], references: [id])
-  driverId    String @unique
+  driver     Driver?     @relation(fields: [driverId], references: [id])
+  driverId   String?     @unique
   passengers Passenger[]
   busChannel BusChannel?
 }
 
 model User {
-  id         String  @id @default(uuid())
-  name       String
-  email      String @unique
-  role       String
+  id    String @id @default(uuid())
+  name  String
+  email String @unique
+  role  String
 }
 
 model Passenger {
@@ -84,12 +84,12 @@ model Stop {
 }
 
 model RouteChannel {
-  id          String @id @default(uuid())
+  id          String  @id @default(uuid())
   apiKey      String?
   channelId   String
   fieldNumber String
-  route       Route  @relation(fields: [routeId], references: [id])
-  routeId     String @unique
+  route       Route   @relation(fields: [routeId], references: [id])
+  routeId     String  @unique
 }
 
 model BusChannel {
