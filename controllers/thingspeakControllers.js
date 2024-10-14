@@ -175,7 +175,7 @@ const getRouteChannel = async (req, res) => {
     const fetchDataForBuses = async () => {
       const busDataPromises = buses.map(async (bus) => {
           const { busChannel } = bus; // Destructure busChannel from the bus object
-          const url = `https://api.thingspeak.com/channels/${busChannel.channelId}/fields/${busChannel.fieldNumber}.json`; // Construct the URL based on busChannel
+          const url = `https://api.thingspeak.com/channels/${busChannel.channelId}/fields/${busChannel.fieldNumber}.json?results=300`; // Construct the URL based on busChannel
 
 
       try {
