@@ -44,6 +44,7 @@ model Bus {
   driverId   String?     @unique
   passengers Passenger[]
   busChannel BusChannel?
+  busLocation BusLocationChannel?
 }
 
 model User {
@@ -102,6 +103,9 @@ model BusChannel {
 
 model BusLocationChannel {
   id          String @id @default(uuid())
+  bus         Bus    @relation(fields: [busId], references: [id])
+  busId       String @unique
   channelId   String
-  fieldNumber String
+  latFieldNumber String
+  longFieldNumber String
 }
