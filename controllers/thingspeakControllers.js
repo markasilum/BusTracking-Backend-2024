@@ -156,11 +156,81 @@ const getRouteChannel = async (req, res) => {
       console.log(error)
     }
   };
+
+  const getBusPassCountPerRoute = async (req, res) =>{
+    const {id} = req.params;
+
+    try {
+
+      const buses = await prisma.bus.findMany({
+        where:{
+          routeId: id
+        },
+        include: {
+          busChannel: true
+          },
+      });
+
+      // Fetch data from each URL and return the result
+    const fetchDataForBuses = async () => {
+      const busDataPromises = buses.map(async (bus) => {
+          const { busChannel } = bus; // Destructure busChannel from the bus object
+          const url = `https://api.thingspeak.com/channels/${busChannel.channelId}/fields/${busChannel.fieldNumber}.json`; // Construct the URL based on busChannel
+
+
+      try {
+          const response = await fetch(url);
+          if (!response.ok) {
+              throw new Error(`Failed to fetch data for bus ID ${bus.id}`);
+          }
+          const data = await response.json();
+          const feed = data.feeds;  // Extract the 'feeds' from the response
+
+          // Find the last non-null value in the feed for dynamic field
+          let lastNonNullValue = null;
+          const fieldName = `field${busChannel.fieldNumber}`;  // Construct the dynamic field name
+
+          // Iterate over the feed entries in reverse order to find the last non-null value
+          for (let i = feed.length - 1; i >= 0; i--) {
+              const entry = feed[i];
+              const value = entry[fieldName]; // Use dynamic field name
+
+              if (value !== null) {
+                  lastNonNullValue = value; // Update last non-null value
+                  break; // Exit the loop once the last non-null value is found
+              }
+          }
+
+
+          // Return bus data without busChannel and include the last non-null value
+          const { busChannel: _, ...busData } = bus; // Omit busChannel from bus data
+          return { ...busData, passCount: lastNonNullValue };  // Return the bus data along with the last non-null value
+          } catch (error) {
+              console.error(`Error fetching data for bus ID ${bus.id}:`, error);
+              return { id: bus.id, error: error.message };  // Return error if any
+          }
+      });
+
+      // Wait for all fetch requests to complete and return the result
+      const allBusData = await Promise.all(busDataPromises);
+      return allBusData;
+    };
+          const data = await fetchDataForBuses();
+
+      res.send(data)
+      // console.log(buses)
+      
+    } catch (error) {
+      res.send(error)
+    }
+
+  }
   
   
   
 
 module.exports = {
  getRouteChannel,
- getRoutePassengers
+ getRoutePassengers,
+ getBusPassCountPerRoute
 }

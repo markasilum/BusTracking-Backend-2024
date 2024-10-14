@@ -29,6 +29,7 @@ const getBusIndexOfRoute = async (req, res) => {
       include: {
         route: true, // Include related route data if needed
         driver: true, // Include related driver data if needed
+        busChannel: true
       },
     });
     res.status(200).json(buses);
