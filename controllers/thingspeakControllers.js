@@ -324,7 +324,65 @@ const getRouteChannel = async (req, res) => {
     }
   };
 
+  const getBusPassenger = async (req, res) => {
+    const {id} = req.params
+    try {
+      const bus = await prisma.bus.findUnique({
+        where:{
+          id: id
+        },
+        include:{
+          route: true,
+          busChannel: true 
+        }
+      });
+      console.log(id) 
+
+      const fetchBusData = async (bus) => {
+        const url = `https://api.thingspeak.com/channels/${bus.busChannel.channelId}/fields/${bus.busChannel.fieldNumber}.json?results=300`; // Construct the URL based on busChannel
+      
+        try {
+          const response = await fetch(url);
+          if (!response.ok) {
+            throw new Error(`Failed to fetch data for bus ID ${bus.id}`);
+          }
+          const data = await response.json();
+          const feed = data.feeds; // Extract the 'feeds' from the response
+      
+          // Find the last non-null value in the feed for the dynamic field
+          let lastNonNullValue = null;
+          const fieldName = `field${bus.busChannel.fieldNumber}`; // Construct the dynamic field name
+      
+          // Iterate over the feed entries in reverse order to find the last non-null value
+          for (let i = feed.length - 1; i >= 0; i--) {
+            const entry = feed[i];
+            const value = entry[fieldName]; // Use dynamic field name
+      
+            if (value !== null) {
+              lastNonNullValue = value; // Update last non-null value
+              break; // Exit the loop once the last non-null value is found
+            }
+          }
+      
+          // Return bus data with busChannel and the last non-null value
+          return { ...bus, passCount: lastNonNullValue }; // Return the bus data along with busChannel and last non-null value
+        } catch (error) {
+          console.error(`Error fetching data for bus ID ${bus.id}:`, error);
+          return { id: bus.id, error: error.message }; // Return error if any
+        }
+      };
+      
+      // Example usage:
+      const data = await fetchBusData(bus); // Assuming 'bus' is a single bus object
+      
   
+        res.send(data)
+
+      
+    } catch (error) {
+      console.log(error)
+    }
+  }
   
   
 
@@ -332,5 +390,6 @@ module.exports = {
  getRouteChannel,
  getRoutePassengers,
  getBusPassCountPerRoute,
- getBusLocation
+ getBusLocation,
+ getBusPassenger
 }
