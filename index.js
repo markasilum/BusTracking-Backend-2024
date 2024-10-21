@@ -7,6 +7,8 @@ const rfidRoutes = require('./routes/rfidRoutes');
 const driverRoutes = require("./routes/driverRoutes");
 const thingSpeak = require('./routes/thingspeakRoutes');
 const userRoutes = require('./routes/usersRoutes');
+const { busDataScript } = require('./controllers/thingspeakControllers');
+
 
 // const sendRoutePassCount = require('./services/callSendRoutePassengers');
 
@@ -29,6 +31,14 @@ app.use('/rfid', rfidRoutes);
 app.use("/drivers", driverRoutes);
 app.use('/thingspeak', thingSpeak);
 app.use('/users', userRoutes );
+
+// Call the busDataScript function directly when the server starts
+const startSendingCoordinates = async () => {
+  await busDataScript(); // Send coordinates when the server starts
+};
+
+startSendingCoordinates();
+
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
