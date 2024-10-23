@@ -383,7 +383,124 @@ const getRouteChannel = async (req, res) => {
       console.log(error)
     }
   }
+
+  // const getAllBusPassengers = async (req, res) => {
+  //   try {
+  //     // Fetch all buses including their routes and bus channels
+  //     const buses = await prisma.bus.findMany({
+  //       include: {
+  //         busChannel: true,
+  //       },
+  //     });
   
+  //     // Function to fetch bus data and passenger count
+  //     const fetchBusData = async (bus) => {
+  //       // Generate the URL for each bus based on its channelId and fieldNumber
+  //       const url = `https://api.thingspeak.com/channels/2629260/feeds.json?results=50`;
+        
+  //       // Log the URL for debugging purposes
+  //       console.log(`Fetching data from URL: ${url}`);
+  
+  //       try {
+  //         // Fetch the data from ThingSpeak
+  //         const response = await fetch(url);
+  //         if (!response.ok) {
+  //           throw new Error(`Failed to fetch data for bus ID ${bus.id}`);
+  //         }
+  //         const data = await response.json();
+  //         const feed = data.feeds;
+  
+  //         // Find the last non-null value in the feed for the dynamic field
+  //         let lastNonNullValue = null;
+  //         const fieldName = `field${bus.busChannel.fieldNumber}`;
+  
+  //         // Iterate over the feed entries in reverse order to find the last non-null value
+  //         for (let i = feed.length - 1; i >= 0; i--) {
+  //           const entry = feed[i];
+  //           const value = entry[fieldName];
+  
+  //           if (value !== null) {
+  //             lastNonNullValue = value;
+  //             break;
+  //           }
+  //         }
+  
+  //         // Return bus data with busChannel and the last non-null value
+  //         return { ...bus, passCount: lastNonNullValue, url }; // Add the URL to the response
+  //       } catch (error) {
+  //         console.error(`Error fetching data for bus ID ${bus.id}:`, error);
+  //         return { id: bus.id, error: error.message };
+  //       }
+  //     };
+  
+  //     // Use Promise.all to fetch data for all buses concurrently
+  //     const busDataPromises = buses.map(fetchBusData);
+  //     const allBusData = await Promise.all(busDataPromises);
+  
+  //     // Send the combined bus data back in the response
+  //     res.send(allBusData);
+      
+  //   } catch (error) {
+  //     console.error("Error fetching buses:", error);
+  //     res.status(500).send({ error: error.message });
+  //   }
+  // };
+
+  const getAllBusPassengers = async (req, res) => {
+    try {
+      // Fetch all buses including their bus channels
+      const buses = await prisma.bus.findMany({
+        include: {
+          busChannel: true,
+        },
+      });
+  
+      // Fetch the data from ThingSpeak only once
+      const url = `https://api.thingspeak.com/channels/2629260/feeds.json?results=50`;
+      console.log(`Fetching data from URL: ${url}`);
+  
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error("Failed to fetch data from ThingSpeak");
+      }
+  
+      const data = await response.json();
+      const feeds = data.feeds;
+  
+      // Create an object to store the most recent non-null data for each field
+      const latestFieldData = {
+        field1: null,
+        field2: null,
+        field3: null,
+        field4: null,
+      };
+  
+      // Iterate through feeds to populate the latest non-null data for each field
+      feeds.forEach(feed => {
+        if (feed.field1 !== null) latestFieldData.field1 = feed.field1;
+        if (feed.field2 !== null) latestFieldData.field2 = feed.field2;
+        if (feed.field3 !== null) latestFieldData.field3 = feed.field3;
+        if (feed.field4 !== null) latestFieldData.field4 = feed.field4;
+      });
+  
+      // Map over the buses and assign the appropriate passenger count using latestFieldData
+      const allBusData = buses.map((bus) => {
+        const fieldNumber = `field${bus.busChannel.fieldNumber}`;
+        const passCount = latestFieldData[fieldNumber];
+        return { ...bus, passCount }; // Add the last non-null passenger count
+      });
+  
+      // Send the combined bus data back in the response
+      res.send(allBusData);
+    } catch (error) {
+      console.error("Error fetching buses:", error);
+      res.status(500).send({ error: error.message });
+    }
+  };
+  
+  
+
+
   
 
 module.exports = {
@@ -391,5 +508,6 @@ module.exports = {
  getRoutePassengers,
  getBusPassCountPerRoute,
  getBusLocation,
- getBusPassenger
+ getBusPassenger,
+ getAllBusPassengers
 }
