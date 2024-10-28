@@ -14,6 +14,11 @@ router.post("/create", busController.createBus);
 // Get a bus by ID
 router.get("/:id", busController.getBusById);
 
+router.get("/get-loc-channel/:id", busController.getBusLocChannel);
+router.get("/get-pass-channel/:id", busController.getBusPassChannel);
+
+
+
 // Update a bus by ID
 router.put("/update", busController.updateBus);
 
