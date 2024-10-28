@@ -30,16 +30,16 @@ app.use('/routes', routeRoutes)
 app.use('/rfid', rfidRoutes);
 app.use("/drivers", driverRoutes);
 app.use('/thingspeak', thingSpeak);
-app.use('/users', userRoutes );
+app.use('/users', userRoutes);
 
 // Call the busDataScript function directly when the server starts
-const startSendingCoordinates = async () => {
-  await busDataScript(); // Send coordinates when the server starts
-};
+// const startSendingCoordinates = async () => {
+//   await busDataScript(); // Send coordinates when the server starts
+// };
 
-startSendingCoordinates();
+// startSendingCoordinates();
 
 
-app.listen(port, () => { 
+app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

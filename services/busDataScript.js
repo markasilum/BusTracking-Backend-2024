@@ -160,14 +160,14 @@ const coordinates2 = [
 ];
 
 const sendCoordinates = async (latitude1, longitude1, latitude2, longitude2) => {
-    const url = `https://api.thingspeak.com/update?api_key=6RA7HGL30BKCD1CQ&field1=${latitude1}&field2=${longitude1}&field3=${latitude2}&field4=${longitude2}`;
-  
+    const url = `https://api.thingspeak.com/update?api_key=6RA7HGL30BKCD1CQ&field3=${latitude2}&field4=${longitude2}`;
+
     try {
         // Send the coordinates to ThingSpeak
         const response = await fetch(url);
         const data = await response.text();
         console.log(`Sent: lat1 = ${latitude1}, lon1 = ${longitude1}, lat2 = ${latitude2}, lon2 = ${longitude2} - Response: ${data}`);
-        
+
     } catch (error) {
         console.error(`Error sending lat1 = ${latitude1}, lon1 = ${longitude1}, lat2 = ${latitude2}, lon2 = ${longitude2}:`, error);
     }
@@ -178,7 +178,7 @@ const sendCoordinatesWithDelay = async () => {
         for (let i = 0; i < coordinates.length; i++) {
             const [latitude1, longitude1] = coordinates[i];
             const [latitude2, longitude2] = coordinates2[i % coordinates2.length]; // Loop through coordinates2
-            
+
             await sendCoordinates(latitude1, longitude1, latitude2, longitude2);
 
             if (i < coordinates.length - 1) {
@@ -191,11 +191,11 @@ const sendCoordinatesWithDelay = async () => {
 };
 
 // Start sending coordinates
-  
-  const busDataScript = async () => {
+
+const busDataScript = async () => {
     await sendCoordinatesWithDelay();
     console.log("All coordinates sent to ThingSpeak with a 15-second delay!");
-  };
+};
 
 
 
