@@ -16,17 +16,14 @@ const getDriverIndex = async (req, res) => {
 };
 
 const createDriver = async (req, res) => {
-  const { firstName, middleName, lastName, phone, status, bus } = req.body;
+  const { userId, status, bus } = req.body;
 
   try {
     const newDriver = await prisma.driver.create({
       data: {
-        firstName,
-        middleName,
-        lastName,
-        phone,
         status,
-        bus,
+        userId, // Set the user ID directly
+        bus, // Connect to the bus if provided
       },
     });
     res.status(201).json(newDriver);
@@ -61,25 +58,20 @@ const getDriverById = async (req, res) => {
       .json({ error: "An error occurred while fetching the driver" });
   }
 };
-
 const updateDriver = async (req, res) => {
-  const { id, firstName, middleName, lastName, phone, status, bus } = req.body;
-   console.log(req.body)
+  const { id, status, bus } = req.body; // Only status and bus are now included
+  console.log(req.body);
   try {
     const updatedDriver = await prisma.driver.update({
       where: { id },
       data: {
-        firstName,
-        middleName,
-        lastName,
-        phone,
         status,
-        bus
+        bus, // Connect to the bus if provided
       },
     });
     res.status(200).json(updatedDriver);
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res
       .status(500)
       .json({ error: "An error occurred while updating the driver", error });

@@ -33,25 +33,26 @@ model RouteCoordinates {
 }
 
 model Bus {
-  id         String      @id @default(uuid())
-  route      Route       @relation(fields: [routeId], references: [id])
-  routeId    String
-  busName    String
-  busNumber  String
-  capacity   Int
-  status     String
-  driver     Driver?     @relation(fields: [driverId], references: [id])
-  driverId   String?     @unique
-  passengers Passenger[]
-  busChannel BusChannel?
+  id          String              @id @default(uuid())
+  route       Route               @relation(fields: [routeId], references: [id])
+  routeId     String
+  busName     String
+  busNumber   String
+  capacity    Int
+  status      String
+  driver      Driver?             @relation(fields: [driverId], references: [id])
+  driverId    String?             @unique
+  passengers  Passenger[]
+  busChannel  BusChannel?
   busLocation BusLocationChannel?
 }
 
 model User {
-  id    String @id @default(uuid())
-  name  String
-  email String @unique
-  role  String
+  id      String   @id @default(uuid())
+  name    String
+  email   String   @unique
+  role    String
+  drivers Driver[] // Define a one-to-many relation if a user can have multiple drivers
 }
 
 model Passenger {
@@ -64,14 +65,23 @@ model Passenger {
   stopId    String?
 }
 
+// model Driver {
+//   id         String  @id @default(uuid())
+//   firstName  String?
+//   middleName String?
+//   lastName   String?
+//   phone      String
+//   status     String
+//   bus        Bus?
+// }
+
 model Driver {
-  id         String  @id @default(uuid())
-  firstName  String?
-  middleName String?
-  lastName   String?
-  phone      String
-  status     String
-  bus        Bus?
+  id     String  @id @default(uuid())
+  userId String  @unique // Ensures one driver per user
+  status String?
+  bus    Bus? // Modify if you have a specific Bus model
+
+  user User @relation(fields: [userId], references: [id]) // Establishes the relation
 }
 
 model Stop {
@@ -102,10 +112,10 @@ model BusChannel {
 }
 
 model BusLocationChannel {
-  id          String @id @default(uuid())
-  bus         Bus    @relation(fields: [busId], references: [id])
-  busId       String @unique
-  channelId   String
-  latFieldNumber String
+  id              String @id @default(uuid())
+  bus             Bus    @relation(fields: [busId], references: [id])
+  busId           String @unique
+  channelId       String
+  latFieldNumber  String
   longFieldNumber String
 }
