@@ -170,7 +170,7 @@ const updateBus = async (req, res) => {
     fieldNumber, 
     busLocationChannel, 
     latFieldNumber, 
-    longFieldNumber 
+    longFieldNumber  
   } = req.body;
 
   try {

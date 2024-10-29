@@ -160,7 +160,7 @@ const coordinates2 = [
 ];
 
 const sendCoordinates = async (latitude1, longitude1, latitude2, longitude2) => {
-    const url = `https://api.thingspeak.com/update?api_key=6RA7HGL30BKCD1CQ&field3=${latitude2}&field4=${longitude2}`;
+    const url = `https://api.thingspeak.com/update?api_key=6RA7HGL30BKCD1CQ&field1=${latitude1}&field2=${longitude1}&field3=${latitude2}&field4=${longitude2}`;
 
     try {
         // Send the coordinates to ThingSpeak

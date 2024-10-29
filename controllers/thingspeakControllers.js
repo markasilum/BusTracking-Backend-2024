@@ -175,7 +175,7 @@ const getBusPassCountPerRoute = async (req, res) => {
     const fetchDataForBuses = async () => {
       const busDataPromises = buses.map(async (bus) => {
         const { busChannel } = bus; // Destructure busChannel from the bus object
-        const url = `https://api.thingspeak.com/channels/${busChannel.channelId}/fields/${busChannel.fieldNumber}.json?results=300`; // Construct the URL based on busChannel
+        const url = `https://api.thingspeak.com/channels/${busChannel.channelId}/fields/${busChannel.fieldNumber}.json`; // Construct the URL based on busChannel
 
 
         try {
@@ -234,16 +234,14 @@ const getBusLocation = async (req, res) => {
         busLocation: true,
       },
     });
-
-    // Fetch data from each URL and return the result
     const fetchDataForBuses = async () => {
       const busDataPromises = buses.map(async (bus) => {
-        const { busLocation } = bus; // Destructure busLocation from the bus object
+        const { busLocation } = bus;
 
-        // Proceed only if busLocation is not null
-        if (busLocation) {
-          const latUrl = `https://api.thingspeak.com/channels/${busLocation.channelId}/fields/${busLocation.latFieldNumber}.json`; // URL for latitude
-          const longUrl = `https://api.thingspeak.com/channels/${busLocation.channelId}/fields/${busLocation.longFieldNumber}.json`; // URL for longitude
+        // Only fetch location data if busLocation is available
+        if (busLocation && busLocation.channelId && busLocation.latFieldNumber && busLocation.longFieldNumber) {
+          const latUrl = `https://api.thingspeak.com/channels/${busLocation.channelId}/fields/${busLocation.latFieldNumber}.json`;
+          const longUrl = `https://api.thingspeak.com/channels/${busLocation.channelId}/fields/${busLocation.longFieldNumber}.json`;
 
           try {
             const [latResponse, longResponse] = await Promise.all([
@@ -251,16 +249,11 @@ const getBusLocation = async (req, res) => {
               fetch(longUrl),
             ]);
 
-            // Check if responses are okay
             if (!latResponse.ok) {
-              throw new Error(
-                `Failed to fetch latitude data for bus ID ${bus.id}`
-              );
+              throw new Error(`Failed to fetch latitude data for bus ID ${bus.id}`);
             }
             if (!longResponse.ok) {
-              throw new Error(
-                `Failed to fetch longitude data for bus ID ${bus.id}`
-              );
+              throw new Error(`Failed to fetch longitude data for bus ID ${bus.id}`);
             }
 
             const latData = await latResponse.json();
@@ -269,49 +262,39 @@ const getBusLocation = async (req, res) => {
             const latFeed = latData.feeds;
             const longFeed = longData.feeds;
 
-            // Find the last non-null value for latitude
             let lastLatValue = null;
             for (let i = latFeed.length - 1; i >= 0; i--) {
               const entry = latFeed[i];
-              const latValue = entry[`field${busLocation.latFieldNumber}`]; // Use dynamic field name
-
+              const latValue = entry[`field${busLocation.latFieldNumber}`];
               if (latValue !== null) {
-                lastLatValue = latValue; // Update last latitude value
-                break; // Exit loop once last non-null value is found
+                lastLatValue = latValue;
+                break;
               }
             }
 
-            // Find the last non-null value for longitude
             let lastLongValue = null;
             for (let i = longFeed.length - 1; i >= 0; i--) {
               const entry = longFeed[i];
-              const longValue = entry[`field${busLocation.longFieldNumber}`]; // Use dynamic field name
-
+              const longValue = entry[`field${busLocation.longFieldNumber}`];
               if (longValue !== null) {
-                lastLongValue = longValue; // Update last longitude value
-                break; // Exit loop once last non-null value is found
+                lastLongValue = longValue;
+                break;
               }
             }
 
-            // Return bus data without busLocation and include lat/long values
-            const { busLocation: _, ...busData } = bus; // Omit busLocation from bus data
-            return {
-              ...busData,
-              latitude: lastLatValue,
-              longitude: lastLongValue,
-            }; // Return bus data with lat/long values
+            const { busLocation: _, ...busData } = bus;
+            return { ...busData, latitude: lastLatValue, longitude: lastLongValue };
           } catch (error) {
-            console.error(`Error fetching data for bus ID ${bus.id}:`, error);
-            return { id: bus.id, error: error.message }; // Return error if any
+            console.error(`Error fetching location data for bus ID ${bus.id}:`, error);
+            return { id: bus.id, error: error.message };
           }
         } else {
-          // If busLocation is null, return bus data with null lat/long
-          const { busLocation: _, ...busData } = bus; // Omit busLocation from bus data
-          return { ...busData, latitude: null, longitude: null };
+          // Directly return the bus data without latitude/longitude if busLocation is not available
+          const { busLocation: _, ...busData } = bus;
+          return busData;
         }
       });
 
-      // Wait for all fetch requests to complete and return the result
       const allBusData = await Promise.all(busDataPromises);
       return allBusData;
     };
@@ -323,6 +306,7 @@ const getBusLocation = async (req, res) => {
     console.log(error);
   }
 };
+
 
 const getBusPassenger = async (req, res) => {
   const { id } = req.params
@@ -367,7 +351,7 @@ const getBusPassenger = async (req, res) => {
         // Return bus data with busChannel and the last non-null value
         return { ...bus, passCount: lastNonNullValue }; // Return the bus data along with busChannel and last non-null value
       } catch (error) {
-        console.error(`Error fetching data for bus ID ${bus.id}:`, error);
+        console.error(`Error fetching passenger data for bus ID ${bus.id}:`, error);
         return { id: bus.id, error: error.message }; // Return error if any
       }
     };
@@ -384,67 +368,7 @@ const getBusPassenger = async (req, res) => {
   }
 }
 
-// const getAllBusPassengers = async (req, res) => {
-//   try {
-//     // Fetch all buses including their routes and bus channels
-//     const buses = await prisma.bus.findMany({
-//       include: {
-//         busChannel: true,
-//       },
-//     });
 
-//     // Function to fetch bus data and passenger count
-//     const fetchBusData = async (bus) => {
-//       // Generate the URL for each bus based on its channelId and fieldNumber
-//       const url = `https://api.thingspeak.com/channels/2629260/feeds.json?results=50`;
-
-//       // Log the URL for debugging purposes
-//       console.log(`Fetching data from URL: ${url}`);
-
-//       try {
-//         // Fetch the data from ThingSpeak
-//         const response = await fetch(url);
-//         if (!response.ok) {
-//           throw new Error(`Failed to fetch data for bus ID ${bus.id}`);
-//         }
-//         const data = await response.json();
-//         const feed = data.feeds;
-
-//         // Find the last non-null value in the feed for the dynamic field
-//         let lastNonNullValue = null;
-//         const fieldName = `field${bus.busChannel.fieldNumber}`;
-
-//         // Iterate over the feed entries in reverse order to find the last non-null value
-//         for (let i = feed.length - 1; i >= 0; i--) {
-//           const entry = feed[i];
-//           const value = entry[fieldName];
-
-//           if (value !== null) {
-//             lastNonNullValue = value;
-//             break;
-//           }
-//         }
-
-//         // Return bus data with busChannel and the last non-null value
-//         return { ...bus, passCount: lastNonNullValue, url }; // Add the URL to the response
-//       } catch (error) {
-//         console.error(`Error fetching data for bus ID ${bus.id}:`, error);
-//         return { id: bus.id, error: error.message };
-//       }
-//     };
-
-//     // Use Promise.all to fetch data for all buses concurrently
-//     const busDataPromises = buses.map(fetchBusData);
-//     const allBusData = await Promise.all(busDataPromises);
-
-//     // Send the combined bus data back in the response
-//     res.send(allBusData);
-
-//   } catch (error) {
-//     console.error("Error fetching buses:", error);
-//     res.status(500).send({ error: error.message });
-//   }
-// };
 
 const getAllBusPassengers = async (req, res) => {
   try {
@@ -456,8 +380,8 @@ const getAllBusPassengers = async (req, res) => {
     });
 
     // Fetch the data from ThingSpeak only once
-    const url = `https://api.thingspeak.com/channels/2629260/feeds.json?results=50`;
-    console.log(`Fetching data from URL: ${url}`);
+    const url = `https://api.thingspeak.com/channels/2629260/feeds.json`;
+    // console.log(`Fetching data from URL: ${url}`);
 
     const response = await fetch(url);
     if (!response.ok) {
