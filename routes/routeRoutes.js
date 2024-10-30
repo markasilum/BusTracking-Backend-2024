@@ -7,5 +7,9 @@ router.get("/index/coordinates", routeController.getRoutesCoordinates );
 router.get("/get-route/:id", routeController.getRoute );
 router.post("/create", routeController.createRoute );
 router.post("/update", routeController.updateRoute );
+router.get("/sections/:id", routeController.getRouteSections );
+router.get("/get-section/:id", routeController.getSection );
+
+
 
 module.exports = router;
