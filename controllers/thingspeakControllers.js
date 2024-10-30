@@ -206,8 +206,9 @@ const getBusPassCountPerRoute = async (req, res) => {
           const { busChannel: _, ...busData } = bus; // Omit busChannel from bus data
           return { ...busData, passCount: lastNonNullValue };  // Return the bus data along with the last non-null value
         } catch (error) {
-          console.error(`Error fetching data for bus ID ${bus.id}:`, error);
-          return { id: bus.id, error: error.message };  // Return error if any
+          console.error(`Error fetching bus passenger data for bus ID ${bus.id}:`, error);
+          const { busChannel: _, ...busData } = bus;
+          return { ...busData, passCount: "unavailable"};  // Return error if any
         }
       });
 
@@ -352,7 +353,7 @@ const getBusPassenger = async (req, res) => {
         return { ...bus, passCount: lastNonNullValue }; // Return the bus data along with busChannel and last non-null value
       } catch (error) {
         console.error(`Error fetching passenger data for bus ID ${bus.id}:`, error);
-        return { id: bus.id, error: error.message }; // Return error if any
+        return { ...bus,  passCount: "unavailable" }; // Return error if any
       }
     };
 

@@ -40,18 +40,26 @@ model Bus {
   busNumber  String
   capacity   Int
   status     String
-  driver     Driver?     @relation(fields: [driverId], references: [id])
-  driverId   String?     @unique
+  driver     Driver? 
   passengers Passenger[]
   busChannel BusChannel?
   busLocation BusLocationChannel?
 }
 
 model User {
-  id    String @id @default(uuid())
-  name  String
-  email String @unique
-  role  String
+  id         String     @id @default(uuid())
+  name       String
+  email      String     @unique
+  role       String
+  driver     Driver?
+}
+
+model Driver {
+  id         String  @id @default(uuid())
+  user        User @relation(fields: [userId], references: [id])
+  userId      String  @unique 
+  bus        Bus @relation(fields: [busId], references: [id])
+  busId     String @unique 
 }
 
 model Passenger {
@@ -64,15 +72,7 @@ model Passenger {
   stopId    String?
 }
 
-model Driver {
-  id         String  @id @default(uuid())
-  firstName  String?
-  middleName String?
-  lastName   String?
-  phone      String
-  status     String
-  bus        Bus?
-}
+
 
 model Stop {
   id         String      @id @default(uuid())
