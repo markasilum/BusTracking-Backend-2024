@@ -3272,10 +3272,12 @@ const SegmentPayloadSizeData = [
         }
     ]
 
+//create array of data
 function extractData(data,field) {
     return data.map(entry => entry[field]);
 }
 
+//arrays of data 
 const SegmentElapsedTimeExtractedData = extractData(SegmentElapsedTimeData,"field1");
 const AverageThroughputExtractedData = extractData(AverageThroughputData, "field2");
 const SegmentPayloadSizeExtractedData = extractData(SegmentPayloadSizeData, "field3");
