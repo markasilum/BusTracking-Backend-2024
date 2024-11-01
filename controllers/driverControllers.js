@@ -4,10 +4,21 @@ const prisma = new PrismaClient();
 // Get all drivers along with their assigned bus
 const getDriverIndex = async (req, res) => {
   try {
-    const drivers = await prisma.driver.findMany({
-      include: {
-        bus: true, // Include the associated bus for each driver
+    const drivers = await prisma.user.findMany({
+      where:{
+        role: "driver"
       },
+      include:{
+        driver:{
+          include:{
+            bus:{
+              include:{
+                route: true
+              }
+            }
+          }
+        }
+      }
     });
     res.status(200).json(drivers);
   } catch (error) {
@@ -43,11 +54,17 @@ const getDriverById = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const driver = await prisma.driver.findUnique({
-      where: { id },
-      include: {
-        bus: true, // Include the associated bus
-      },
+    const driver = await prisma.user.findUnique({
+      where: { 
+        id: id
+       },
+       include:{
+        driver:{
+          include:{
+            bus: true
+          }
+        }
+       }
     });
 
     if (!driver) {
@@ -63,28 +80,37 @@ const getDriverById = async (req, res) => {
 };
 
 const updateDriver = async (req, res) => {
-  const { id, firstName, middleName, lastName, phone, status, bus } = req.body;
-   console.log(req.body)
+  const { id, busId } = req.body; // User ID and Bus ID from request body
+  console.log(req.body);
+
   try {
-    const updatedDriver = await prisma.driver.update({
-      where: { id },
-      data: {
-        firstName,
-        middleName,
-        lastName,
-        phone,
-        status,
-        bus
+    const updatedDriver = await prisma.driver.upsert({
+      where: {
+        userId: id, // Assuming userId is unique
+      },
+      update: {
+        bus: {
+          connect: { id: busId }, // Connect to existing bus
+        },
+      },
+      create: {
+        user: {
+          connect: { id: id }, // Connect to existing user
+        },
+        bus: {
+          connect: { id: busId }, // Connect to existing bus
+        },
       },
     });
+    
     res.status(200).json(updatedDriver);
   } catch (error) {
-    console.log(error)
-    res
-      .status(500)
-      .json({ error: "An error occurred while updating the driver", error });
+    console.error("Error updating driver:", error.message);
+    res.status(500).json({ error: "An error occurred while updating the driver", details: error.message });
   }
 };
+
+
 
 // Delete a driver
 const deleteDriver = async (req, res) => {

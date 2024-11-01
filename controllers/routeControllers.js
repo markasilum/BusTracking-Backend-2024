@@ -14,8 +14,67 @@ const getRouteIndex = async(req, res) => {
         res.status(200).json(routes);
       } catch (error) {
         res.status(500).json({ error: 'An error occurred while fetching buses' });
+      }  
+}
+
+const getRouteSections = async(req, res) => {
+  const{id} = req.params
+
+  try {
+      const routes = await prisma.routeSection.findMany({
+        where:{
+          routeId: id
+        },
+        orderBy:{
+          sectionName:"asc"
+        },
+      });
+
+      const url = `https://api.thingspeak.com/channels/${routes[0].channelId}/feeds.json`;
+
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error("Failed to fetch data from ThingSpeak");
       }
+
+      const data = await response.json();
     
+      const feeds = data.feeds;
+
+    // Create an object to store the most recent non-null data for each field
+    const latestFieldData = {
+      field1: null,
+      field2: null,
+      field3: null,
+      field4: null,
+      field5: null,
+      field6: null,
+      field7: null,
+      field8: null,
+    };
+
+    // // Iterate through feeds to populate the latest non-null data for each field
+    feeds.forEach(feed => {
+      if (feed.field1 !== null) latestFieldData.field1 = feed.field1;
+      if (feed.field2 !== null) latestFieldData.field2 = feed.field2;
+      if (feed.field3 !== null) latestFieldData.field3 = feed.field3;
+      if (feed.field4 !== null) latestFieldData.field4 = feed.field4;
+      if (feed.field5 !== null) latestFieldData.field5 = feed.field5;
+      if (feed.field6 !== null) latestFieldData.field6 = feed.field6;
+      if (feed.field7 !== null) latestFieldData.field7 = feed.field7;
+      if (feed.field8 !== null) latestFieldData.field8 = feed.field8;
+    });
+
+     const allSectionData = routes.map((route) => {
+      const fieldNumber = `field${route.fieldNumber}`;
+      const passCount = latestFieldData[fieldNumber];
+      return { ...route, passCount }; // Add the last non-null passenger count
+    });
+
+      res.status(200).json(allSectionData);
+    } catch (error) {
+      res.status(500).json({ error: 'An error occurred while fetching buses' });
+    }  
 }
 
 //index of coordinates
@@ -64,6 +123,21 @@ const getRoute = async(req, res) => {
             
           }
         }
+      });
+      res.status(200).json(routes);
+    } catch (error) {
+      res.status(500).json({ error: 'An error occurred while fetching buses' });
+    }
+  
+}
+
+const getSection = async(req, res) => {
+  const{id} = req.params
+  try {
+      const routes = await prisma.routeSection.findUnique({
+        where:{
+          id: id
+        },
       });
       res.status(200).json(routes);
     } catch (error) {
@@ -125,5 +199,7 @@ module.exports = {
     getRoutesCoordinates,
     getRoute,
     createRoute,
-    updateRoute
+    updateRoute,
+    getRouteSections,
+    getSection
 }

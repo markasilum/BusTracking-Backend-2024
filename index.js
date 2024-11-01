@@ -33,9 +33,9 @@ app.use('/thingspeak', thingSpeak);
 app.use('/users', userRoutes);
 
 // Call the busDataScript function directly when the server starts
-// const startSendingCoordinates = async () => {
-//   await busDataScript(); // Send coordinates when the server starts
-// };
+const startSendingCoordinates = async () => {
+  await busDataScript(); // Send coordinates when the server starts
+};
 
 // startSendingCoordinates();
 
