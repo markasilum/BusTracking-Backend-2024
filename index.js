@@ -37,7 +37,7 @@ const startSendingCoordinates = async () => {
   await busDataScript(); // Send coordinates when the server starts
 };
 
-startSendingCoordinates();
+// startSendingCoordinates();
 
 
 app.listen(port, () => {
