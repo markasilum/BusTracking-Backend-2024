@@ -164,7 +164,7 @@ const updateBus = async (req, res) => {
     busNumber, 
     capacity, 
     status, 
-    driverId, 
+    userId, 
     routeId, 
     busPassengerChannel, 
     fieldNumber, 
@@ -172,6 +172,8 @@ const updateBus = async (req, res) => {
     latFieldNumber, 
     longFieldNumber  
   } = req.body;
+
+  console.log(req.body)
 
   try {
     const parsedCapacity = parseInt(capacity);
@@ -193,10 +195,10 @@ const updateBus = async (req, res) => {
             },
           },
         }),
-        ...(driverId && {
+        ...(userId && {
           driver: {
             connect: {
-              id: driverId,
+              userId: userId,
             },
           },
         }),

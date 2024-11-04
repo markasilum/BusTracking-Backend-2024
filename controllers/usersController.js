@@ -50,22 +50,35 @@ const getUser = async (req, res) => {
 };
 
 const updateRole = async (req, res) => {
-    const {id, role} = req.body
+    const { id, role } = req.body;
+    
     try {
+        // Update user role
         const user = await prisma.user.update({
-            where:{
+            where: {
                 id: id
             },
-            data:{
+            data: {
                 role
             }
         });
+
+        // If role is "driver", create an associated Driver entry
+        if (role === "driver") {
+            await prisma.driver.create({
+                data: {
+                    user: { connect: { id: id } },
+                }
+            });
+        }
+
         res.json(user);
     } catch (error) {
         console.error(error); // Log the error for debugging
-        res.status(500).json({ message: "Internal server error" });
+        res.status(500).json({ message: "Internal server error" }); 
     }
 };
+
 
 module.exports = {
     getUser,
