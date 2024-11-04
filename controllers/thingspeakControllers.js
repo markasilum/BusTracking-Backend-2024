@@ -286,8 +286,9 @@ const getBusLocation = async (req, res) => {
             const { busLocation: _, ...busData } = bus;
             return { ...busData, latitude: lastLatValue, longitude: lastLongValue };
           } catch (error) {
-            console.error(`Error fetching location data for bus ID ${bus.id}:`, error);
-            return { id: bus.id, error: error.message };
+            // console.error(`Error fetching location data for bus ID ${bus.id}:`, error);
+            const { busLocation: _, ...busData } = bus;
+            return busData;
           }
         } else {
           // Directly return the bus data without latitude/longitude if busLocation is not available
@@ -418,12 +419,10 @@ const getAllBusPassengers = async (req, res) => {
     // Send the combined bus data back in the response
     res.send(allBusData);
   } catch (error) {
-    console.error("Error fetching buses:", error);
+    console.error("Error fetching busessss:", error);
     res.status(500).send({ error: error.message });
   }
 };
-
-
 
 
 
@@ -434,5 +433,5 @@ module.exports = {
   getBusPassCountPerRoute,
   getBusLocation,
   getBusPassenger,
-  getAllBusPassengers
+  getAllBusPassengers,
 }

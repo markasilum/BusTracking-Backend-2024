@@ -17,6 +17,9 @@ router.get("/:id", busController.getBusById);
 router.get("/get-loc-channel/:id", busController.getBusLocChannel);
 router.get("/get-pass-channel/:id", busController.getBusPassChannel);
 
+router.get("/get-all-channel/:id", busController.getAllBusChannels);
+
+
 
 
 // Update a bus by ID

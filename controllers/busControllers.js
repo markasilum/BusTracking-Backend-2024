@@ -257,6 +257,32 @@ const deleteBus = async (req, res) => {
   }
 };
 
+//get all location for ESP32
+const getAllBusChannels = async (req, res) => {
+  const {id} = req.params
+
+  try {
+    const channels = await prisma.bus.findUnique({
+      where:{
+        id: id
+      },
+      include:{
+        busChannel:true,
+        busLocation: true,
+        route:{
+          include:{
+            routeChannel: true,
+            sections: true
+          }
+        }
+      }
+    })
+    res.send(channels)
+  } catch (error) {
+    
+  }
+}
+
 module.exports = {
   getBusIndex,
   createBus,
@@ -266,4 +292,5 @@ module.exports = {
   getBusIndexOfRoute,
   getBusLocChannel,
   getBusPassChannel,
+  getAllBusChannels
 };

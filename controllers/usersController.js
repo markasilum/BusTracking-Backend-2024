@@ -43,7 +43,7 @@ const getUser = async (req, res) => {
     try {
         const user = await prisma.user.findMany({});
         res.json(user);
-    } catch (error) {
+    } catch (error) {   
         console.error(error); // Log the error for debugging
         res.status(500).json({ message: "Internal server error" });
     }
