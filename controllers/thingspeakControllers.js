@@ -286,7 +286,7 @@ const getBusLocation = async (req, res) => {
             const { busLocation: _, ...busData } = bus;
             return { ...busData, latitude: lastLatValue, longitude: lastLongValue };
           } catch (error) {
-            console.error(`Error fetching location data for bus ID ${bus.id}:`, error);
+            // console.error(`Error fetching location data for bus ID ${bus.id}:`, error);
             return { id: bus.id, error: error.message };
           }
         } else {
