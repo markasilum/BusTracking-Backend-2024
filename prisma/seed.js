@@ -13,7 +13,7 @@ const route1Coordinates = [
   [7.068882826985882, 125.61932722834175],
   [7.06688113301226, 125.61679522303169],
   [7.07118263488843, 125.61304013041084],
-  [7.072204768058619, 125.61209599283758]
+  [7.072204768058619, 125.61209599283758],
 ];
 
 const route2Coordinates = [
@@ -33,7 +33,7 @@ const route2Coordinates = [
   [7.072390521652789, 125.61222108390213],
   [7.074189895700473, 125.61273606803299],
   [7.0761489695297835, 125.6133690693605],
-  [7.076447088731435, 125.6130793907869]
+  [7.076447088731435, 125.6130793907869],
 ];
 
 async function main() {
@@ -46,13 +46,13 @@ async function main() {
         create: route1Coordinates.map(([latitude, longitude], index) => ({
           pointOrder: index,
           latitude,
-          longitude
-        }))
-      }
+          longitude,
+        })),
+      },
     },
   });
 
-  console.log('Route 1 created:', route1);
+  console.log("Route 1 created:", route1);
 
   // Create the second route with its coordinates
   const route2 = await prisma.route.create({
@@ -63,13 +63,13 @@ async function main() {
         create: route2Coordinates.map(([latitude, longitude], index) => ({
           pointOrder: index,
           latitude,
-          longitude
-        }))
-      }
+          longitude,
+        })),
+      },
     },
   });
 
-  console.log('Route 2 created:', route2);
+  console.log("Route 2 created:", route2);
 
   // Create admin users
   const adminUsers = [
@@ -87,19 +87,24 @@ async function main() {
       email: "sevchavez@addu.edu.ph",
       name: "Sean Chavez",
       role: "admin",
-    }
+    },
+    {
+      email: "seann.chvz@gmail.com",
+      name: "Ylai (Driver)",
+      role: "driver",
+    },
   ];
 
   for (const user of adminUsers) {
     const createdUser = await prisma.user.create({
       data: user,
     });
-    console.log('Admin user created:', createdUser);
+    console.log("Admin user created:", createdUser);
   }
 }
 
 main()
-  .catch(e => {
+  .catch((e) => {
     console.error(e);
     process.exit(1);
   })

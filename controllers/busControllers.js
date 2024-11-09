@@ -29,6 +29,7 @@ const getBusIndexOfRoute = async (req, res) => {
       include: {
         route: true, // Include related route data if needed
         driver: true, // Include related driver data if needed
+        busChannel: true,
       },
     });
     res.status(200).json(buses);
@@ -39,8 +40,19 @@ const getBusIndexOfRoute = async (req, res) => {
 
 // Create a new bus
 const createBus = async (req, res) => {
-  const { busName, busNumber, route, capacity, status, driver, routeId } =
-    req.body;
+  const {
+    busName,
+    busNumber,
+    capacity,
+    status,
+    driverId,
+    routeId,
+    busPassengerChannel,
+    fieldNumber,
+    busLocationChannel,
+    latFieldNumber,
+    longFieldNumber,
+  } = req.body;
 
   try {
     const parsedCapacity = parseInt(capacity);
@@ -55,10 +67,35 @@ const createBus = async (req, res) => {
         busName,
         busNumber,
         capacity: parsedCapacity,
-        route,
         status,
-        driver,
-        routeId,
+        ...(driverId && {
+          driver: {
+            connect: {
+              id: driverId,
+            },
+          },
+        }),
+        ...(routeId && {
+          route: {
+            connect: {
+              id: routeId,
+            },
+          },
+        }),
+        // Creating busLocationChannel entry
+        busLocation: {
+          create: {
+            channelId: busLocationChannel,
+            latFieldNumber,
+            longFieldNumber,
+          },
+        },
+        busChannel: {
+          create: {
+            channelId: busPassengerChannel,
+            fieldNumber: fieldNumber,
+          },
+        },
       },
     });
     res.status(201).json(newBus);
@@ -91,35 +128,135 @@ const getBusById = async (req, res) => {
   }
 };
 
+const getBusLocChannel = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const bus = await prisma.busLocationChannel.findUnique({
+      where: {
+        busId: id,
+      },
+    });
+
+    if (!bus) {
+      return res.status(404).json({ error: "Bus not found" });
+    }
+
+    res.status(200).json(bus);
+  } catch (error) {
+    res.status(500).json({ error: "An error occurred while fetching the bus" });
+  }
+};
+
+const getBusPassChannel = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const bus = await prisma.busChannel.findUnique({
+      where: {
+        busId: id,
+      },
+    });
+
+    if (!bus) {
+      return res.status(404).json({ error: "Bus not found" });
+    }
+
+    res.status(200).json(bus);
+  } catch (error) {
+    res.status(500).json({ error: "An error occurred while fetching the bus" });
+  }
+};
+
 // Update a bus
 const updateBus = async (req, res) => {
-  const { id, busName, busNumber, capacity, status, driverId, routeId } =
-    req.body;
+  const {
+    id,
+    busName,
+    busNumber,
+    capacity,
+    status,
+    userId,
+    routeId,
+    busPassengerChannel,
+    fieldNumber,
+    busLocationChannel,
+    latFieldNumber,
+    longFieldNumber,
+  } = req.body;
+
   console.log(req.body);
 
   try {
+    const parsedCapacity = parseInt(capacity);
+    if (isNaN(parsedCapacity)) {
+      return res
+        .status(400)
+        .json({ error: "Capacity must be a valid integer" });
+    }
+
     const updatedBus = await prisma.bus.update({
       where: { id },
       data: {
         busName,
         busNumber,
-        capacity,
+        capacity: parsedCapacity,
         status,
-        routeId,
-        driver: {
-          connect: {
-            id: driverId,
+        ...(routeId && {
+          route: {
+            connect: {
+              id: routeId,
+            },
           },
-        },
+        }),
+        ...(userId && {
+          driver: {
+            connect: {
+              userId: userId,
+            },
+          },
+        }),
+        ...(busPassengerChannel && {
+          busChannel: {
+            upsert: {
+              create: {
+                channelId: busPassengerChannel,
+                fieldNumber,
+              },
+              update: {
+                channelId: busPassengerChannel,
+                fieldNumber,
+              },
+            },
+          },
+        }),
+        ...(busLocationChannel && {
+          busLocation: {
+            upsert: {
+              create: {
+                channelId: busLocationChannel,
+                latFieldNumber,
+                longFieldNumber,
+              },
+              update: {
+                channelId: busLocationChannel,
+                latFieldNumber,
+                longFieldNumber,
+              },
+            },
+          },
+        }),
       },
     });
+
     res.status(200).json(updatedBus);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(500).json({ error: "An error occurred while updating the bus" });
   }
 };
 
+// Delete a bus
 const deleteBus = async (req, res) => {
   const { id } = req.params;
 
@@ -133,6 +270,30 @@ const deleteBus = async (req, res) => {
   }
 };
 
+//get all location for ESP32
+const getAllBusChannels = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const channels = await prisma.bus.findUnique({
+      where: {
+        id: id,
+      },
+      include: {
+        busChannel: true,
+        busLocation: true,
+        route: {
+          include: {
+            routeChannel: true,
+            sections: true,
+          },
+        },
+      },
+    });
+    res.send(channels);
+  } catch (error) {}
+};
+
 module.exports = {
   getBusIndex,
   createBus,
@@ -140,4 +301,7 @@ module.exports = {
   updateBus,
   deleteBus,
   getBusIndexOfRoute,
+  getBusLocChannel,
+  getBusPassChannel,
+  getAllBusChannels,
 };
