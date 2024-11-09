@@ -9,9 +9,6 @@ const thingSpeak = require('./routes/thingspeakRoutes');
 const userRoutes = require('./routes/usersRoutes');
 const { busDataScript } = require('./services/busDataScript');
 
-
-// const sendRoutePassCount = require('./services/callSendRoutePassengers');
-
 const app = express();
 const port = 4000;
 const corsOptions = {
@@ -37,7 +34,12 @@ const startSendingCoordinates = async () => {
   await busDataScript(); // Send coordinates when the server starts
 };
 
+//remove comment to start running
 // startSendingCoordinates();
+
+//sent data to routes: remove comment to run
+// const sendRoutePassCount = require('./services/callSendRoutePassengers');
+
 
 
 app.listen(port, () => {
