@@ -294,6 +294,23 @@ const getAllBusChannels = async (req, res) => {
   } catch (error) {}
 };
 
+const getBusOfDriver = async (req, res) => {
+  const { id } = req.params;
+  console.log(id)
+  try {
+    const bus = await prisma.bus.findFirst({
+      where: {
+        driver:{
+          userId: id
+        },
+      },
+    });
+    res.send(bus);
+  } catch (error) {
+    console.log(error)
+  }
+};
+
 module.exports = {
   getBusIndex,
   createBus,
@@ -304,4 +321,5 @@ module.exports = {
   getBusLocChannel,
   getBusPassChannel,
   getAllBusChannels,
+  getBusOfDriver
 };

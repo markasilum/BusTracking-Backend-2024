@@ -12,6 +12,9 @@ router.get("/get-pass-channel/:id", busController.getBusPassChannel);
 
 router.get("/get-all-channel/:id", busController.getAllBusChannels);
 
+router.get("/driver/:id", busController.getBusOfDriver);
+
+
 
 
 
