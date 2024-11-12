@@ -322,8 +322,6 @@ const getBusPassenger = async (req, res) => {
         busChannel: true
       }
     });
-    console.log(id)
-
     const fetchBusData = async (bus) => {
       const url = `https://api.thingspeak.com/channels/${bus.busChannel.channelId}/fields/${bus.busChannel.fieldNumber}.json?results=300`; // Construct the URL based on busChannel
 
@@ -382,7 +380,7 @@ const getAllBusPassengers = async (req, res) => {
     });
 
     // Fetch the data from ThingSpeak only once
-    const url = `https://api.thingspeak.com/channels/2629260/feeds.json`;
+    const url = `https://api.thingspeak.com/channels/2629260/feeds.json?results=500`;
     // console.log(`Fetching data from URL: ${url}`);
 
     const response = await fetch(url);

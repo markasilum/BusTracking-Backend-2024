@@ -34,7 +34,13 @@ const getRouteSections = async (req, res) => {
 
     const response = await fetch(url);
     if (!response.ok) {
-      throw new Error("Failed to fetch data from ThingSpeak");
+      // If error occurs, return the route data with 'unavailable' for passCount
+      const allSectionData = routes.map((route) => ({
+        ...route,
+        passCount: 'unavailable', // Set passCount to 'unavailable' on error
+      }));
+
+      return res.status(200).json(allSectionData);
     }
 
     const data = await response.json();
@@ -119,6 +125,18 @@ const getRoute = async (req, res) => {
             longitude: true,
           },
         },
+        sections: {
+          orderBy: {
+            sectionName: "asc", // Sort sections by sectionName alphabetically
+          },
+          select:{
+            sectionName: true,
+            apiKey: true,
+            channelId: true,
+            fieldNumber: true
+          }
+        },
+        routeChannel: true
       },
     });
     res.status(200).json(routes);
@@ -142,7 +160,7 @@ const getSection = async (req, res) => {
 };
 
 const createRoute = async (req, res) => {
-  const { routeName, routeColor, coordinates } = req.body;
+  const { routeName, routeColor, coordinates,channelId,fieldNumber,apiKey, sections } = req.body;
 
   try {
     // Create a new route
@@ -153,6 +171,16 @@ const createRoute = async (req, res) => {
         coordinates: {
           create: coordinates, // `coordinates` should be an array of objects
         },
+        routeChannel:{
+          create:{
+            apiKey,
+            channelId,
+            fieldNumber
+          }
+        },
+        sections: {
+          create: sections
+        }
       },
     });
 
@@ -166,7 +194,9 @@ const createRoute = async (req, res) => {
 };
 
 const updateRoute = async (req, res) => {
-  const { id, routeName, routeColor, coordinates } = req.body;
+  const { id, routeName, routeColor, coordinates,channelId,fieldNumber,apiKey, sections } = req.body;
+
+  console.log(req.body)
   try {
     // Create a new route
     const updateRoute = await prisma.route.update({
@@ -176,12 +206,44 @@ const updateRoute = async (req, res) => {
       data: {
         routeName,
         routeColor,
+        routeChannel:{
+          upsert:{
+            create:{
+              apiKey: apiKey,
+              channelId: channelId,
+              fieldNumber: fieldNumber
+            },
+            update:{
+              apiKey: apiKey,
+              channelId: channelId,
+              fieldNumber: fieldNumber
+            }
+          }
+        },
         coordinates: {
           deleteMany: {},
           create: coordinates,
         },
+        sections:{
+          deleteMany:{},
+          create: sections
+        }
       },
     });
+    // ...(busPassengerChannel && {
+    //   busChannel: {
+    //     upsert: {
+    //       create: {
+    //         channelId: busPassengerChannel,
+    //         fieldNumber,
+    //       },
+    //       update: {
+    //         channelId: busPassengerChannel,
+    //         fieldNumber,
+    //       },
+    //     },
+    //   },
+    // }),
 
     res.status(201).json(updateRoute);
   } catch (error) {
