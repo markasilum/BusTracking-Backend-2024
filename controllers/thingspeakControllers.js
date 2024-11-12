@@ -241,8 +241,8 @@ const getBusLocation = async (req, res) => {
 
         // Only fetch location data if busLocation is available
         if (busLocation && busLocation.channelId && busLocation.latFieldNumber && busLocation.longFieldNumber) {
-          const latUrl = `https://api.thingspeak.com/channels/${busLocation.channelId}/fields/${busLocation.latFieldNumber}.json`;
-          const longUrl = `https://api.thingspeak.com/channels/${busLocation.channelId}/fields/${busLocation.longFieldNumber}.json`;
+          const latUrl = `https://api.thingspeak.com/channels/${busLocation.channelId}/fields/${busLocation.latFieldNumber}.json?results=8000`;
+          const longUrl = `https://api.thingspeak.com/channels/${busLocation.channelId}/fields/${busLocation.longFieldNumber}.json?results=8000`;
 
           try {
             const [latResponse, longResponse] = await Promise.all([
