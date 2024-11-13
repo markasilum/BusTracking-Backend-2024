@@ -143,7 +143,7 @@ const getRoutePassengers = async (req, res) => {
     for (const route of routeChannel) {
       const total = summedValues[route.routeId] ? summedValues[route.routeId][0] : 0; // Get total for the current route
       await sendTotalToThingSpeak(route, total);
-      await delay(15000); // Wait for 15 seconds before the next iteration
+      await delay(16000); // Wait for 15 seconds before the next iteration
     }
 
     // console.log("sent route passengers")
@@ -208,7 +208,7 @@ const getBusPassCountPerRoute = async (req, res) => {
         } catch (error) {
           console.error(`Error fetching bus passenger data for bus ID ${bus.id}:`, error);
           const { busChannel: _, ...busData } = bus;
-          return { ...busData, passCount: "unavailable"};  // Return error if any
+          return { ...busData, passCount: "unavailable" };  // Return error if any
         }
       });
 
@@ -241,8 +241,8 @@ const getBusLocation = async (req, res) => {
 
         // Only fetch location data if busLocation is available
         if (busLocation && busLocation.channelId && busLocation.latFieldNumber && busLocation.longFieldNumber) {
-          const latUrl = `https://api.thingspeak.com/channels/${busLocation.channelId}/fields/${busLocation.latFieldNumber}.json?results=8000`;
-          const longUrl = `https://api.thingspeak.com/channels/${busLocation.channelId}/fields/${busLocation.longFieldNumber}.json?results=8000`;
+          const latUrl = `https://api.thingspeak.com/channels/${busLocation.channelId}/fields/${busLocation.latFieldNumber}.json`;
+          const longUrl = `https://api.thingspeak.com/channels/${busLocation.channelId}/fields/${busLocation.longFieldNumber}.json`;
 
           try {
             const [latResponse, longResponse] = await Promise.all([
@@ -323,7 +323,7 @@ const getBusPassenger = async (req, res) => {
       }
     });
     const fetchBusData = async (bus) => {
-      const url = `https://api.thingspeak.com/channels/${bus.busChannel.channelId}/fields/${bus.busChannel.fieldNumber}.json?results=300`; // Construct the URL based on busChannel
+      const url = `https://api.thingspeak.com/channels/${bus.busChannel.channelId}/fields/${bus.busChannel.fieldNumber}.json`; // Construct the URL based on busChannel
 
       try {
         const response = await fetch(url);
@@ -352,7 +352,7 @@ const getBusPassenger = async (req, res) => {
         return { ...bus, passCount: lastNonNullValue }; // Return the bus data along with busChannel and last non-null value
       } catch (error) {
         console.error(`Error fetching passenger data for bus ID ${bus.id}:`, error);
-        return { ...bus,  passCount: "unavailable" }; // Return error if any
+        return { ...bus, passCount: "unavailable" }; // Return error if any
       }
     };
 
@@ -380,7 +380,7 @@ const getAllBusPassengers = async (req, res) => {
     });
 
     // Fetch the data from ThingSpeak only once
-    const url = `https://api.thingspeak.com/channels/2629260/feeds.json?results=500`;
+    const url = `https://api.thingspeak.com/channels/2629260/feeds.json`;
     // console.log(`Fetching data from URL: ${url}`);
 
     const response = await fetch(url);

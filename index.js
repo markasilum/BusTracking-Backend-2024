@@ -42,7 +42,7 @@ const startSendingCoordinates = async () => {
 // startSendingCoordinates();
 
 //sent data to routes: remove comment to run
-// const sendRoutePassCount = require('./services/callSendRoutePassengers');
+const sendRoutePassCount = require('./services/callSendRoutePassengers');
 
 
 
