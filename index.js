@@ -41,11 +41,11 @@ const startSendingCoordinates = async () => {
 //remove comment to start running
 // startSendingCoordinates();
 
-//sent data to routes: remove comment to run
-const sendRoutePassCount = require('./services/callSendRoutePassengers');
+//send data to routes: remove comment to run
+// const sendRoutePassCount = require('./services/callSendRoutePassengers');
 
 
 
-app.listen(port, () => {
+app.listen(port, '0.0.0.0',() => {
   console.log(`Server is running on port ${port}`);
 });
