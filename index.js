@@ -44,7 +44,9 @@ const startSendingCoordinates = async () => {
 //send data to routes: remove comment to run
 // const sendRoutePassCount = require('./services/callSendRoutePassengers');
 
-
+app.get('/', (req, res) => {
+  res.send('Hello World!');
+});
 
 app.listen(port, '0.0.0.0',() => {
   console.log(`Server is running on port ${port}`);

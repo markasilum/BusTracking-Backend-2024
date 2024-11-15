@@ -81,11 +81,7 @@ const getRoutePassengers = async (req, res) => {
     };
 
     const data = await fetchUrls(urls);
-
-    // Initialize an object to hold the last non-null values for each URL
     const lastNonNullValues = {};
-
-    // Function to extract last non-null values from feeds
     const extractLastNonNullValues = (channels) => {
       return channels.reduce((acc, channel) => {
         const feeds = channel.feeds;
@@ -100,14 +96,12 @@ const getRoutePassengers = async (req, res) => {
       }, {});
     };
 
-    // Process each URL in the data object
     for (const [url, channels] of Object.entries(data)) {
       lastNonNullValues[url] = extractLastNonNullValues(channels);
     }
 
     const summedValues = {};
 
-    // Function to sum numeric values in an object
     const sumValues = (fields) => {
       return Object.values(fields).reduce((sum, value) => {
         const numericValue = parseFloat(value);
@@ -115,7 +109,6 @@ const getRoutePassengers = async (req, res) => {
       }, 0);
     };
 
-    // Calculate summed values for each URL
     for (const [url, fields] of Object.entries(lastNonNullValues)) {
       const sum = sumValues(fields);
       summedValues[url] = sum > 0 ? [sum] : {};
@@ -139,11 +132,10 @@ const getRoutePassengers = async (req, res) => {
     };
     const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-    // // Iterate through each route and send the total
     for (const route of routeChannel) {
-      const total = summedValues[route.routeId] ? summedValues[route.routeId][0] : 0; // Get total for the current route
+      const total = summedValues[route.routeId] ? summedValues[route.routeId][0] : 0; 
       await sendTotalToThingSpeak(route, total);
-      await delay(16000); // Wait for 15 seconds before the next iteration
+      await delay(16000); 
     }
 
     // console.log("sent route passengers")
@@ -322,6 +314,7 @@ const getBusPassenger = async (req, res) => {
         busChannel: true
       }
     });
+
     const fetchBusData = async (bus) => {
       const url = `https://api.thingspeak.com/channels/${bus.busChannel.channelId}/fields/${bus.busChannel.fieldNumber}.json`; // Construct the URL based on busChannel
 
@@ -331,38 +324,30 @@ const getBusPassenger = async (req, res) => {
           throw new Error(`Failed to fetch data for bus ID ${bus.id}`);
         }
         const data = await response.json();
-        const feed = data.feeds; // Extract the 'feeds' from the response
+        const feed = data.feeds; 
 
-        // Find the last non-null value in the feed for the dynamic field
         let lastNonNullValue = null;
-        const fieldName = `field${bus.busChannel.fieldNumber}`; // Construct the dynamic field name
+        const fieldName = `field${bus.busChannel.fieldNumber}`; 
 
-        // Iterate over the feed entries in reverse order to find the last non-null value
         for (let i = feed.length - 1; i >= 0; i--) {
           const entry = feed[i];
-          const value = entry[fieldName]; // Use dynamic field name
+          const value = entry[fieldName]; 
 
           if (value !== null) {
-            lastNonNullValue = value; // Update last non-null value
-            break; // Exit the loop once the last non-null value is found
+            lastNonNullValue = value; 
+            break; 
           }
         }
 
-        // Return bus data with busChannel and the last non-null value
-        return { ...bus, passCount: lastNonNullValue }; // Return the bus data along with busChannel and last non-null value
+        return { ...bus, passCount: lastNonNullValue }; 
       } catch (error) {
         console.error(`Error fetching passenger data for bus ID ${bus.id}:`, error);
-        return { ...bus, passCount: "unavailable" }; // Return error if any
+        return { ...bus, passCount: "unavailable" }; 
       }
     };
 
-    // Example usage:
-    const data = await fetchBusData(bus); // Assuming 'bus' is a single bus object
-
-
+    const data = await fetchBusData(bus); 
     res.send(data)
-
-
   } catch (error) {
     console.log(error)
   }
