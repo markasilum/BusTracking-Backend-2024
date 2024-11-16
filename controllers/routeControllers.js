@@ -13,7 +13,10 @@ const getRouteIndex = async (req, res) => {
     });
     res.status(200).json(routes);
   } catch (error) {
-    res.status(500).json({ error: "An error occurred while fetching buses" ,error});
+    res.status(500).json({
+      error: "An error occurred while fetching routes and buses",
+      details: error.message || "No additional error details available",
+    });
   }
 };
 
