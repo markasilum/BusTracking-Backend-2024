@@ -14,7 +14,6 @@ const systemRoutes = require("./routes/systemRoutes");
 
 // Import services
 const { busDataScript } = require("./services/busDataScript");
-// const sendRoutePassCount = require('./services/callSendRoutePassengers'); // Uncomment if needed
 
 const app = express();
 const port = 4000; // HTTPS port
@@ -80,10 +79,8 @@ const startSendingCoordinates = async () => {
 };
 
 // Uncomment this line to start sending coordinates when the server starts
-// startSendingCoordinates();
-
-// Uncomment the following line to send route passenger count
-// sendRoutePassCount();
+startSendingCoordinates();
+const sendRoutePassCount = require('./services/callSendRoutePassengers'); // Uncomment if needed
 
 // Load SSL certificates
 const sslOptions = {
@@ -96,11 +93,3 @@ https.createServer(sslOptions, app).listen(port, "0.0.0.0", () => {
   console.log(`HTTPS server is running on https://0.0.0.0:${port}`);
 });
 
-// Optional: Redirect HTTP to HTTPS
-// const http = require("http");
-// http.createServer((req, res) => {
-//   res.writeHead(301, { Location: `https://${req.headers.host}${req.url}` });
-//   res.end();
-// }).listen(80, "0.0.0.0", () => {
-//   console.log("HTTP traffic is being redirected to HTTPS");
-// });
