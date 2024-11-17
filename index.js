@@ -19,12 +19,21 @@ const { busDataScript } = require("./services/busDataScript");
 const app = express();
 const port = 4000; // HTTPS port
 
-// CORS configuration to allow all origins
+// CORS configuration
 const corsOptions = {
   origin: (origin, callback) => {
-    callback(null, true); // Allow all origins
+    const allowedOrigins = [
+      "http://localhost:3000",
+      "https://bus-tracking-2024.vercel.app"
+    ];
+    
+    if (allowedOrigins.includes(origin) || !origin) {  // Allow requests with no origin (e.g., curl requests)
+      callback(null, true);  // Allow the request
+    } else {
+      callback(new Error('Not allowed by CORS'));  // Reject the request
+    }
   },
-  credentials: true, // Allow cookies to be sent
+  credentials: true, // Allow cookies and credentials
 };
 app.use(cors(corsOptions));
 
