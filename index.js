@@ -19,6 +19,13 @@ const { busDataScript } = require("./services/busDataScript");
 const app = express();
 const port = 4000; // HTTPS port
 
+// Logging middleware
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} request to ${req.url}`);
+  console.log(`Origin: ${req.headers.origin || "No Origin"}`);
+  next(); // Pass control to the next middleware
+});
+
 /// Allow credentials and dynamically check origins
 const allowedOrigins = [
   "http://localhost:3000",
@@ -27,21 +34,24 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin: (origin, callback) => {
+    console.log(`CORS middleware called for origin: ${origin}`);
     if (allowedOrigins.includes(origin) || !origin) {
       callback(null, true); // Allow request
     } else {
-      callback(new Error("Not allowed by CORS")); // Block request
+      console.error(`CORS blocked request from origin: ${origin}`);
+      callback(new Error("Not allowed by CORS"));
     }
   },
-  credentials: true, // Allow cookies and credentials
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Allowed methods
-  allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
+  credentials: true, // Allow credentials
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
 
-app.use(cors(corsOptions)); // Apply CORS middleware globally
+app.use(cors(corsOptions)); // Apply CORS middleware
 
-// Handle preflight requests for all routes
+// Handle preflight requests
 app.options("*", cors(corsOptions));
+
 // Middleware to parse JSON requests
 app.use(express.json());
 
