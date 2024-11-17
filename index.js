@@ -67,8 +67,8 @@ const startSendingCoordinates = async () => {
 
 // Load SSL certificates
 const sslOptions = {
-  key: fs.readFileSync("/etc/ssl/selfsigned/selfsigned.key"), // Update path as per your setup
-  cert: fs.readFileSync("/etc/ssl/selfsigned/selfsigned.crt"), // Update path as per your setup
+  key: fs.readFileSync("/Users/markasilum/server.key"), // Update path as per your setup
+  cert: fs.readFileSync("/Users/markasilum/server.crt"), // Update path as per your setup
 };
 
 // Start HTTPS server
@@ -83,4 +83,4 @@ https.createServer(sslOptions, app).listen(port, "0.0.0.0", () => {
 //   res.end();
 // }).listen(80, "0.0.0.0", () => {
 //   console.log("HTTP traffic is being redirected to HTTPS");
-// });
+// }); 
