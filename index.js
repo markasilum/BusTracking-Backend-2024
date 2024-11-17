@@ -19,16 +19,10 @@ const { busDataScript } = require("./services/busDataScript");
 const app = express();
 const port = 4000; // HTTPS port
 
-// CORS configuration
+// CORS configuration to allow all origins
 const corsOptions = {
-  origin: [
-    "http://localhost:3000",
-    "http://localhost:4000",
-    "http://3.27.197.150:4000",
-    "http://192.168.1.3:4000",
-    "https://bus-tracking-2024.vercel.app"
-  ],
-  credentials: true, // Allow cookies and credentials
+  origin: "*",  // This allows all origins
+  credentials: true,  // Allow cookies and credentials to be included in requests
 };
 app.use(cors(corsOptions));
 
