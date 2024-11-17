@@ -19,6 +19,7 @@ const corsOptions = {
     "http://localhost:4000",
     "http://3.27.197.150:4000",
     "http://192.168.1.3:4000",
+    "https://bus-tracking-2024.vercel.app"
   ], // Replace yourPort with the actual port number of your client application //Replace ip address for testing with esp32
   credentials: true, // Allow credentials
 };
