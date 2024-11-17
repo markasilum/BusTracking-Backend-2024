@@ -67,8 +67,8 @@ const startSendingCoordinates = async () => {
 
 // Load SSL certificates
 const sslOptions = {
-  key: fs.readFileSync("/etc/ssl/selfsigned/selfsigned.key"), // Update path as per your setup
-  cert: fs.readFileSync("/etc/ssl/selfsigned/selfsigned.crt"), // Update path as per your setup
+  key: fs.readFileSync('/home/ubuntu/certificate/selfsigned.key'),  // path to the key
+  cert: fs.readFileSync('/home/ubuntu/certificate/selfsigned.crt') // path to the certificate
 };
 
 // Start HTTPS server
