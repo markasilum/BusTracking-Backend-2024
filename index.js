@@ -21,8 +21,10 @@ const port = 4000; // HTTPS port
 
 // CORS configuration to allow all origins
 const corsOptions = {
-  origin: "*",  // This allows all origins
-  credentials: true,  // Allow cookies and credentials to be included in requests
+  origin: (origin, callback) => {
+    callback(null, true); // Allow all origins
+  },
+  credentials: true, // Allow cookies to be sent
 };
 app.use(cors(corsOptions));
 
