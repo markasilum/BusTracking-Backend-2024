@@ -17,7 +17,7 @@ const { busDataScript } = require("./services/busDataScript");
 // const sendRoutePassCount = require('./services/callSendRoutePassengers'); // Uncomment if needed
 
 const app = express();
-const port = 4000; // HTTPS port
+const port = 443; // HTTPS port
 
 // CORS configuration
 const corsOptions = {
