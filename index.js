@@ -19,24 +19,29 @@ const { busDataScript } = require("./services/busDataScript");
 const app = express();
 const port = 4000; // HTTPS port
 
-// CORS configuration
+/// Allow credentials and dynamically check origins
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://bus-tracking-2024.vercel.app",
+];
+
 const corsOptions = {
   origin: (origin, callback) => {
-    const allowedOrigins = [
-      "http://localhost:3000",
-      "https://bus-tracking-2024.vercel.app"
-    ];
-    
-    if (allowedOrigins.includes(origin) || !origin) {  // Allow requests with no origin (e.g., curl requests)
-      callback(null, true);  // Allow the request
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true); // Allow request
     } else {
-      callback(new Error('Not allowed by CORS'));  // Reject the request
+      callback(new Error("Not allowed by CORS")); // Block request
     }
   },
   credentials: true, // Allow cookies and credentials
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Allowed methods
+  allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
 };
-app.use(cors(corsOptions));
 
+app.use(cors(corsOptions)); // Apply CORS middleware globally
+
+// Handle preflight requests for all routes
+app.options("*", cors(corsOptions));
 // Middleware to parse JSON requests
 app.use(express.json());
 
