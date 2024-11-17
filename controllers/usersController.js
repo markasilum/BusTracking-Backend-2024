@@ -3,6 +3,7 @@ const prisma = new PrismaClient();
 
 const getUser = async (req, res) => {
     const { email } = req.body; // Corrected from req.bodu to req.body
+    console.log(req.body)
     try {
         const user = await prisma.user.findUnique({
             where: {
