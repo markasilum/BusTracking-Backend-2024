@@ -77,10 +77,10 @@ https.createServer(sslOptions, app).listen(port, "0.0.0.0", () => {
 });
 
 // Optional: Redirect HTTP to HTTPS
-const http = require("http");
-http.createServer((req, res) => {
-  res.writeHead(301, { Location: `https://${req.headers.host}${req.url}` });
-  res.end();
-}).listen(80, "0.0.0.0", () => {
-  console.log("HTTP traffic is being redirected to HTTPS");
-});
+// const http = require("http");
+// http.createServer((req, res) => {
+//   res.writeHead(301, { Location: `https://${req.headers.host}${req.url}` });
+//   res.end();
+// }).listen(80, "0.0.0.0", () => {
+//   console.log("HTTP traffic is being redirected to HTTPS");
+// });
