@@ -79,16 +79,21 @@ const startSendingCoordinates = async () => {
 };
 
 // Uncomment this line to start sending coordinates when the server starts
-startSendingCoordinates();
-const sendRoutePassCount = require('./services/callSendRoutePassengers'); // Uncomment if needed
+// startSendingCoordinates();
+// const sendRoutePassCount = require('./services/callSendRoutePassengers'); // Uncomment if needed
 
-// Load SSL certificates
+// AWS Server SSL certificates
 const sslOptions = {
   key: fs.readFileSync('/home/ubuntu/certificate/selfsigned.key'),  // path to the key
   cert: fs.readFileSync('/home/ubuntu/certificate/selfsigned.crt') // path to the certificate
 };
 
-// Start HTTPS server
+
+ 
+
+
+
+// Start HTTPS server 
 https.createServer(sslOptions, app).listen(port, "0.0.0.0", () => {
   console.log(`HTTPS server is running on https://0.0.0.0:${port}`);
 });
