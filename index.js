@@ -33,7 +33,6 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin: (origin, callback) => {
-    console.log(`CORS middleware called for origin: ${origin}`);
     if (allowedOrigins.includes(origin) || !origin) {
       callback(null, true); // Allow request
     } else {
@@ -64,7 +63,7 @@ app.use("/users", userRoutes);
 app.use("/system", systemRoutes);
 
 // Health check endpoint
-app.get("/health", (req, res) => {
+app.get("/", (req, res) => {
   res.json({ status: "OK", message: "Express app is running with HTTPS" });
 });
 
@@ -87,10 +86,6 @@ const sslOptions = {
   key: fs.readFileSync('/home/ubuntu/certificate/selfsigned.key'),  // path to the key
   cert: fs.readFileSync('/home/ubuntu/certificate/selfsigned.crt') // path to the certificate
 };
-
-
- 
-
 
 
 // Start HTTPS server 
