@@ -122,7 +122,7 @@ const getRoutePassengers = async (req, res) => {
       try {
         const response = await fetch(thingspeakURL, { method: 'GET' });
         if (response.ok) {
-          console.log(thingspeakURL);
+          console.log(response);
         } else {
           console.log(`Failed to send total to ThingSpeak for route ${route.routeId}.`);
         }
@@ -135,7 +135,7 @@ const getRoutePassengers = async (req, res) => {
     for (const route of routeChannel) {
       const total = summedValues[route.routeId] ? summedValues[route.routeId][0] : 0; 
       await sendTotalToThingSpeak(route, total);
-      await delay(16000); 
+      await delay(15000); 
     }
 
     // console.log("sent route passengers")
