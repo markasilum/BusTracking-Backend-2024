@@ -265,7 +265,7 @@ const deleteBus = async (req, res) => {
   const { id } = req.params;
 
   try {
-    await prisma.bus.delete({
+    await prisma.bus.update({
       where: {
         id: id,
       },
