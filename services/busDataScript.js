@@ -562,8 +562,8 @@ const sendCoordinates = async (latitude1, longitude1, latitude2, longitude2, lat
     }
 };
 
-const sendPassCount = async (bus1Pass, bus2Pass) => {
-    const url = `https://api.thingspeak.com/update?api_key=AQI26OYG18M6PZYH&field1=${bus1Pass}&field2=${bus2Pass}`;
+const sendPassCount = async (bus1Pass, bus2Pass, bus3Pass) => {
+    const url = `https://api.thingspeak.com/update?api_key=AQI26OYG18M6PZYH&field1=${bus1Pass}&field2=${bus2Pass}&field3=${bus3Pass}`;
 
     try {
         // Send the passenger count data to ThingSpeak
