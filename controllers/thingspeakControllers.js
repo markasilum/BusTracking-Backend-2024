@@ -116,54 +116,47 @@ const getRoutePassengers = async (req, res) => {
     }
 
     const routeChannel = await prisma.routeChannel.findMany({});
-
-    const sendTotalToThingSpeak = async (route, total) => {
-      // console.log(route, total)
-      const thingspeakURL = `https://api.thingspeak.com/update?api_key=${route.apiKey}&field${route.fieldNumber}=${total}`;
-      try {
-        const response = await fetch(thingspeakURL, { method: 'GET' });
-        const data = await response.text();
-
-        if (response.ok) {
-          console.log("route pass send response:", data);
-        } else {
-          console.log(`Failed to send total to ThingSpeak for route ${route.routeId}.`);
-        }
-      } catch (error) {
-        console.error(`Error while sending data to ThingSpeak for route ${route.routeId}:`, error);
-      }
-    };
-
-    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-    console.log(summedValues)
-
-    // const sendTotalToThingSpeak3 = async (apiKey, routeChannel, summedValues) => {
-    //   const queryParams = routeChannel
-    //     .map((route) => {
-    //       const total = summedValues[route.routeId] ? summedValues[route.routeId][0] : 0;
-    //       return `field${route.fieldNumber}=${total}`;
-    //     })
-    //     .join("&");
     
-    //   const thingspeakURL = `https://api.thingspeak.com/update?api_key=${apiKey}&${queryParams}`;
-    //   console.log(thingspeakURL);
-    //   // Optionally send the request
-    //   // await fetch(thingspeakURL);
-    // };
-
-    // const sendWithDelay = async (routeChannel, summedValues, interval = 15000) => {
-    //   const apiKey = routeChannel[0]?.apiKey; // Assuming all routes share the same API key
+    const groupedByApiKey = routeChannel.reduce((acc, curr) => {
+      if (!acc[curr.apiKey]) acc[curr.apiKey] = [];
+      acc[curr.apiKey].push(curr);
+      return acc;
+    }, {});
     
-    //   while (true) {
-    //     await sendTotalToThingSpeak3(apiKey, routeChannel, summedValues);
-    //     await delay(interval); // Wait for the specified interval before the next send
+    // Generate ThingSpeak URLs
+    const urls2 = Object.entries(groupedByApiKey).map(([apiKey, channels]) => {
+      const fields = channels
+        .map(channel => {
+          const value = data[channel.routeId]?.[0];
+          return value !== undefined ? `field${channel.fieldNumber}=${value}` : null;
+        })
+        .filter(Boolean) // Remove null entries
+        .join('&');
+      
+      return `https://api.thingspeak.com/update?api_key=${apiKey}&${fields}`;
+    });
+    
+    console.log(urls2);
+    // const sendTotalToThingSpeak = async (route, total) => {
+    //   // console.log(route, total)
+    //   const thingspeakURL = `https://api.thingspeak.com/update?api_key=${route.apiKey}&field${route.fieldNumber}=${total}`;
+    //   try {
+    //     const response = await fetch(thingspeakURL, { method: 'GET' });
+    //     const data = await response.text();
+
+    //     if (response.ok) {
+    //       console.log("route pass send response:", data);
+    //     } else {
+    //       console.log(`Failed to send total to ThingSpeak for route ${route.routeId}.`);
+    //     }
+    //   } catch (error) {
+    //     console.error(`Error while sending data to ThingSpeak for route ${route.routeId}:`, error);
     //   }
     // };
 
-    // sendWithDelay(routeChannel, summedValues);
+    // const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-    
+    // console.log(summedValues)
 
     // for (const route of routeChannel) {
     //   const total = summedValues[route.routeId] ? summedValues[route.routeId][0] : 0; 
@@ -171,12 +164,12 @@ const getRoutePassengers = async (req, res) => {
     //   await delay(15000); 
     // }
 
-    
+
 
     // console.log("sent route passengers")
 
     // Send the total as the response
-    // res.status(200).json( summedValues );
+    res.status(200).json( urls2 );
 
   } catch (error) {
     // res.status(500).json({ error: "An error occurred while fetching buses" });
