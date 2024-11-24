@@ -154,7 +154,7 @@ const getRoutePassengers = async (req, res) => {
       const apiKey = routeChannel[0]?.apiKey; // Assuming all routes share the same API key
     
       while (true) {
-        await sendTotalToThingSpeak(apiKey, routeChannel, summedValues);
+        await sendTotalToThingSpeak3(apiKey, routeChannel, summedValues);
         await delay(interval); // Wait for the specified interval before the next send
       }
     };
