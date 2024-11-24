@@ -136,30 +136,32 @@ const getRoutePassengers = async (req, res) => {
 
     const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-    const sendTotalToThingSpeak3 = async (apiKey, routeChannel, summedValues) => {
-      const queryParams = routeChannel
-        .map((route) => {
-          const total = summedValues[route.routeId] ? summedValues[route.routeId][0] : 0;
-          return `field${route.fieldNumber}=${total}`;
-        })
-        .join("&");
-    
-      const thingspeakURL = `https://api.thingspeak.com/update?api_key=${apiKey}&${queryParams}`;
-      console.log(thingspeakURL);
-      // Optionally send the request
-      // await fetch(thingspeakURL);
-    };
+    console.log(summedValues)
 
-    const sendWithDelay = async (routeChannel, summedValues, interval = 15000) => {
-      const apiKey = routeChannel[0]?.apiKey; // Assuming all routes share the same API key
+    // const sendTotalToThingSpeak3 = async (apiKey, routeChannel, summedValues) => {
+    //   const queryParams = routeChannel
+    //     .map((route) => {
+    //       const total = summedValues[route.routeId] ? summedValues[route.routeId][0] : 0;
+    //       return `field${route.fieldNumber}=${total}`;
+    //     })
+    //     .join("&");
     
-      while (true) {
-        await sendTotalToThingSpeak3(apiKey, routeChannel, summedValues);
-        await delay(interval); // Wait for the specified interval before the next send
-      }
-    };
+    //   const thingspeakURL = `https://api.thingspeak.com/update?api_key=${apiKey}&${queryParams}`;
+    //   console.log(thingspeakURL);
+    //   // Optionally send the request
+    //   // await fetch(thingspeakURL);
+    // };
 
-    sendWithDelay(routeChannel, summedValues);
+    // const sendWithDelay = async (routeChannel, summedValues, interval = 15000) => {
+    //   const apiKey = routeChannel[0]?.apiKey; // Assuming all routes share the same API key
+    
+    //   while (true) {
+    //     await sendTotalToThingSpeak3(apiKey, routeChannel, summedValues);
+    //     await delay(interval); // Wait for the specified interval before the next send
+    //   }
+    // };
+
+    // sendWithDelay(routeChannel, summedValues);
 
     
 
