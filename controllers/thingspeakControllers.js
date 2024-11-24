@@ -163,11 +163,11 @@ const getRoutePassengers = async (req, res) => {
 
     
 
-    for (const route of routeChannel) {
-      const total = summedValues[route.routeId] ? summedValues[route.routeId][0] : 0; 
-      await sendTotalToThingSpeak(route, total);
-      await delay(15000); 
-    }
+    // for (const route of routeChannel) {
+    //   const total = summedValues[route.routeId] ? summedValues[route.routeId][0] : 0; 
+    //   await sendTotalToThingSpeak(route, total);
+    //   await delay(15000); 
+    // }
 
     
 
