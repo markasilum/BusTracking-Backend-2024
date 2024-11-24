@@ -122,6 +122,8 @@ const getRoutePassengers = async (req, res) => {
     const sendTotalToThingSpeak3 = async (apiKey, route, summedValues) => {
       const total = summedValues[route.routeId] ? summedValues[route.routeId][0] : 0;
       const thingspeakURL = `https://api.thingspeak.com/update?api_key=${apiKey}&field${route.fieldNumber}=${total}`;
+
+      console.log("Sending to route: ", thingspeakURL)
       
       try {
         const response = await fetch(thingspeakURL);
