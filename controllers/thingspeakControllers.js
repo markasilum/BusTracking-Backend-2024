@@ -129,7 +129,7 @@ const urls2 = Object.entries(groupedByApiKey).map(([apiKey, channels]) => {
   const fields = channels
     .map(channel => {
       // Access the first value from the data array
-      const value = data[channel.routeId]?.[0]; 
+      const value =  summedValues[channel.routeId]?.[0]; 
       return value !== undefined ? `field${channel.fieldNumber}=${value}` : null;
     })
     .filter(Boolean) // Remove null entries
