@@ -140,15 +140,35 @@ const getRoutePassengers = async (req, res) => {
 
     console.log(summedValues)
 
-    const sendTotalToThingSpeak2 = async (route, total) => {
-      const thingspeakURL = `https://api.thingspeak.com/update?api_key=${route.apiKey}&field${route.fieldNumber}=${total}`;
-      console.log(thingspeakURL)
-    };
+    // const sendTotalToThingSpeak2 = async (route, total) => {
+    //   const thingspeakURL = `https://api.thingspeak.com/update?api_key=${route.apiKey}&field${route.fieldNumber}=${total}`;
+    //   console.log(thingspeakURL)
+    // };
 
-    for (const route of routeChannel) {
-      const total = summedValues[route.routeId] ? summedValues[route.routeId][0] : 0; 
-      await sendTotalToThingSpeak2(route, total);
-    }
+    // for (const route of routeChannel) {
+    //   const total = summedValues[route.routeId] ? summedValues[route.routeId][0] : 0; 
+    //   await sendTotalToThingSpeak2(route, total);
+    // }
+
+    const sendTotalToThingSpeak3 = async (apiKey, routeChannel, summedValues) => {
+      const queryParams = routeChannel
+        .map((route) => {
+          const total = summedValues[route.routeId] ? summedValues[route.routeId][0] : 0;
+          return `field${route.fieldNumber}=${total}`;
+        })
+        .join("&");
+    
+      const thingspeakURL = `https://api.thingspeak.com/update?api_key=${apiKey}&${queryParams}`;
+      console.log(thingspeakURL);
+      // Optionally send the request
+      // await fetch(thingspeakURL);
+    };
+    
+  
+    
+    // Assuming all routes share the same API key
+    sendTotalToThingSpeak3(routeChannel[0]?.apiKey, routeChannel, summedValues);
+    
 
     for (const route of routeChannel) {
       const total = summedValues[route.routeId] ? summedValues[route.routeId][0] : 0; 
