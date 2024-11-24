@@ -359,10 +359,9 @@ const getBusPassenger = async (req, res) => {
   try {
     const bus = await prisma.bus.findUnique({
       where: {
-        id: id
-      },
-      where:{
+        id: id,
         isArchived:false
+
       },
       include: {
         route: true,
