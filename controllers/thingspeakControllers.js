@@ -140,12 +140,6 @@ const getRoutePassengers = async (req, res) => {
 
     console.log(summedValues)
 
-    for (const route of routeChannel) {
-      const total = summedValues[route.routeId] ? summedValues[route.routeId][0] : 0; 
-      await sendTotalToThingSpeak(route, total);
-      await delay(15000); 
-    }
-
     const sendTotalToThingSpeak2 = async (route, total) => {
       const thingspeakURL = `https://api.thingspeak.com/update?api_key=${route.apiKey}&field${route.fieldNumber}=${total}`;
       console.log(thingspeakURL)
@@ -155,6 +149,14 @@ const getRoutePassengers = async (req, res) => {
       const total = summedValues[route.routeId] ? summedValues[route.routeId][0] : 0; 
       await sendTotalToThingSpeak2(route, total);
     }
+
+    for (const route of routeChannel) {
+      const total = summedValues[route.routeId] ? summedValues[route.routeId][0] : 0; 
+      await sendTotalToThingSpeak(route, total);
+      await delay(15000); 
+    }
+
+    
 
     // console.log("sent route passengers")
 
