@@ -599,8 +599,9 @@ const sendPassCountDelay = async () => {
         for (let i = 0; i < bus1Pass.length; i++) {
             const bus1 = bus1Pass[i];
             const bus2 = bus2Pass[i];
+            const bus3 = bus3Pass[i];
 
-            await sendPassCount(bus1, bus2);
+            await sendPassCount(bus1, bus2,bus3);
 
             // Delay of 15 seconds if not the last entry in array
             if (i < bus1Pass.length - 1) {
