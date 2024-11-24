@@ -121,8 +121,10 @@ const getRoutePassengers = async (req, res) => {
       const thingspeakURL = `https://api.thingspeak.com/update?api_key=${route.apiKey}&field${route.fieldNumber}=${total}`;
       try {
         const response = await fetch(thingspeakURL, { method: 'GET' });
+        const data = await response.text();
+
         if (response.ok) {
-          console.log("route pass send response:", response.text());
+          console.log("route pass send response:", data);
         } else {
           console.log(`Failed to send total to ThingSpeak for route ${route.routeId}.`);
         }
