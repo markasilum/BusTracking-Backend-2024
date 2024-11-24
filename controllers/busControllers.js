@@ -270,7 +270,8 @@ const deleteBus = async (req, res) => {
         id: id,
       },
       data: {
-        isArchived: true
+        isArchived: true,
+        driver:{disconnect: true}
       }
     });
     res.status(204).send(); // No content to send back
