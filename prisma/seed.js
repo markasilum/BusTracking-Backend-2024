@@ -600,6 +600,71 @@ async function main() {
   });
   
   console.log('Route created:', route);
+
+  const users = [
+    {
+      id: "017de651-a436-469d-a205-03a5f26d8292",
+      name: "PAOLO LUIS RAMIREZ",
+      email: "paolrramirez@addu.edu.ph",
+      role: "user",
+    },
+    {
+      id: "3d527097-9483-48a3-be4c-bb47fafe1680",
+      name: "Sean Elijah Chavez",
+      email: "sevchavez@addu.edu.ph",
+      role: "admin",
+    },
+    {
+      id: "4dd18380-5bfc-48fb-bb62-eeb00990438b",
+      name: "MARK EMMANUEL ASILUM",
+      email: "mecasilum@addu.edu.ph",
+      role: "admin",
+    },
+    {
+      id: "63e02d33-a74e-4d97-b8e1-2263a6b607d7",
+      name: "Shunin Desu",
+      email: "shunindesu08@gmail.com",
+      role: "user",
+    },
+    {
+      id: "6fe7a2e0-9641-4979-ace3-d6f6fd56d110",
+      name: "Jazz Rae Chavez",
+      email: "jazzraechavez@gmail.com",
+      role: "user",
+    },
+    {
+      id: "8e87adfa-0a26-43ef-a05d-f9e2e06f732b",
+      name: "Miguel Espera",
+      email: "miguelespera5@gmail.com",
+      role: "driver",
+    },
+    {
+      id: "b0c5e296-d6c3-4c61-bd34-adcdf5451f32",
+      name: "Paolo Luis Ramirez",
+      email: "paololuisramirez@gmail.com",
+      role: "admin",
+    },
+    {
+      id: "dda1fed9-e0a8-4cd7-8167-d86cca838240",
+      name: "Mark",
+      email: "markasilum13@gmail.com",
+      role: "driver",
+    },
+    {
+      id: "ed7bb3cf-9295-4930-a5e6-5dca94f4640c",
+      name: "Ylai Vallejo",
+      email: "seann.chvz@gmail.com",
+      role: "driver",
+    },
+  ];
+
+  for (const user of users) {
+    await prisma.user.upsert({
+      where: { id: user.id },
+      update: user,
+      create: user,
+    });
+  }
 }
 
 main()
