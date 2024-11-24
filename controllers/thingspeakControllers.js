@@ -102,7 +102,6 @@ const getRoutePassengers = async (req, res) => {
 
     const summedValues = {};
 
-    console.log(summedValues)
 
     const sumValues = (fields) => {
       return Object.values(fields).reduce((sum, value) => {
@@ -136,6 +135,8 @@ const getRoutePassengers = async (req, res) => {
     };
 
     const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    console.log(summedValues)
 
     for (const route of routeChannel) {
       const total = summedValues[route.routeId] ? summedValues[route.routeId][0] : 0; 
