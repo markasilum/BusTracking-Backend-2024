@@ -124,22 +124,39 @@ const groupedByApiKey = routeChannel.reduce((acc, curr) => {
   return acc;
 }, {});
 
-// Generate ThingSpeak URLs
-const urls2 = Object.entries(groupedByApiKey).map(([apiKey, channels]) => {
-  const fields = channels
-    .map(channel => {
-      // Access the first value from the data array
-      const value =  summedValues[channel.routeId]?.[0]; 
-      return value !== undefined ? `field${channel.fieldNumber}=${value}` : null;
-    })
-    .filter(Boolean) // Remove null entries
-    .join('&');
-  
-  // Return the complete ThingSpeak URL
-  return `https://api.thingspeak.com/update?api_key=${apiKey}&${fields}`;
-});
-    
-    console.log(urls2);
+const sendToThingSpeak = async () => {
+  try {
+    const requests = Object.entries(groupedByApiKey).map(async ([apiKey, channels]) => {
+      const fields = channels
+        .map(channel => {
+          // Access the first value from the data array
+          const value = summedValues[channel.routeId]?.[0];
+          return value !== undefined ? `field${channel.fieldNumber}=${value}` : null;
+        })
+        .filter(Boolean) // Remove null entries
+        .join('&');
+      
+      const url = `https://api.thingspeak.com/update?api_key=${apiKey}&${fields}`;
+      console.log(`Sending data to: ${url}`);
+
+      // Send the request using fetch
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const text = await response.text(); // ThingSpeak returns the entry ID as text
+      return text;
+    });
+
+    // Wait for all requests to complete
+    const results = await Promise.all(requests);
+    console.log('Data sent successfully:', results);
+  } catch (error) {
+    console.error('Error sending data to ThingSpeak:', error);
+  }
+};
+
+sendToThingSpeak();
     // const sendTotalToThingSpeak = async (route, total) => {
     //   // console.log(route, total)
     //   const thingspeakURL = `https://api.thingspeak.com/update?api_key=${route.apiKey}&field${route.fieldNumber}=${total}`;
@@ -172,7 +189,7 @@ const urls2 = Object.entries(groupedByApiKey).map(([apiKey, channels]) => {
     // console.log("sent route passengers")
 
     // Send the total as the response
-    res.status(200).json( urls2 );
+    // res.status(200).json( urls2 );
 
   } catch (error) {
     // res.status(500).json({ error: "An error occurred while fetching buses" });
