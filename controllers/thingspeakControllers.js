@@ -204,7 +204,8 @@ const getBusPassCountPerRoute = async (req, res) => {
 
     const buses = await prisma.bus.findMany({
       where: {
-        routeId: id
+        routeId: id,
+        isArchived: false
       },
       include: {
         busChannel: true
