@@ -361,6 +361,9 @@ const getBusPassenger = async (req, res) => {
       where: {
         id: id
       },
+      where:{
+        isArchived:false
+      },
       include: {
         route: true,
         busChannel: true
