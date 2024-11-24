@@ -5,13 +5,13 @@ const getRouteIndex = async (req, res) => {
   try {
     const routes = await prisma.route.findMany({
       where: {
-        isArchive: false, // Filters out archived routes
+        isArchived: false, // Filters out archived routes
       },
       orderBy: {
-        routeName: "asc",
+        routeName: "asc", // Sorts routes alphabetically by name
       },
       include: {
-        buses: true,
+        buses: true, // Includes related buses
       },
     });
     res.status(200).json(routes);
@@ -94,7 +94,7 @@ const getRoutesCoordinates = async (req, res) => {
   try {
     const routes = await prisma.route.findMany({
       where: {
-        isArchive: false, // Filters out archived routes
+        isArchived: false, // Filters out archived routes
       },
       include: {
         coordinates: {
