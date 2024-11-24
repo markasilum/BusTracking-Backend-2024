@@ -4,12 +4,6 @@
   - You are about to drop the `driver` table. If the table is not empty, all the data it contains will be lost.
 
 */
--- DropForeignKey
-ALTER TABLE `driver` DROP FOREIGN KEY `Driver_busId_fkey`;
-
--- DropTable
-DROP TABLE `driver`;
-
 -- CreateTable
 CREATE TABLE `User` (
     `id` VARCHAR(191) NOT NULL,
