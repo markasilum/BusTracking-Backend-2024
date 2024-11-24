@@ -117,35 +117,57 @@ const getRoutePassengers = async (req, res) => {
 
     const routeChannel = await prisma.routeChannel.findMany({});
 
-    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-    const sendTotalToThingSpeak3 = async (apiKey, route, summedValues) => {
-      const total = summedValues[route.routeId] ? summedValues[route.routeId][0] : 0;
-      const thingspeakURL = `https://api.thingspeak.com/update?api_key=${apiKey}&field${route.fieldNumber}=${total}`;
-
-      console.log("Sending to route: ", thingspeakURL)
-      
+    const sendTotalToThingSpeak = async (route, total) => {
+      // console.log(route, total)
+      const thingspeakURL = `https://api.thingspeak.com/update?api_key=${route.apiKey}&field${route.fieldNumber}=${total}`;
       try {
-        const response = await fetch(thingspeakURL);
-        const responseText = await response.text(); // Read the response text
-        console.log(`ThingSpeak Response ${route.fieldNumber}: ${responseText}`);
+        const response = await fetch(thingspeakURL, { method: 'GET' });
+        const data = await response.text();
+
+        if (response.ok) {
+          console.log("route pass send response:", data);
+        } else {
+          console.log(`Failed to send total to ThingSpeak for route ${route.routeId}.`);
+        }
       } catch (error) {
-        console.error(`Error sending to ThingSpeak for field${route.fieldNumber}:`, error);
+        console.error(`Error while sending data to ThingSpeak for route ${route.routeId}:`, error);
       }
     };
+
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    const sendTotalToThingSpeak3 = async (apiKey, routeChannel, summedValues) => {
+      const queryParams = routeChannel
+        .map((route) => {
+          const total = summedValues[route.routeId] ? summedValues[route.routeId][0] : 0;
+          return `field${route.fieldNumber}=${total}`;
+        })
+        .join("&");
     
+      const thingspeakURL = `https://api.thingspeak.com/update?api_key=${apiKey}&${queryParams}`;
+      console.log(thingspeakURL);
+      // Optionally send the request
+      // await fetch(thingspeakURL);
+    };
+
     const sendWithDelay = async (routeChannel, summedValues, interval = 15000) => {
+      const apiKey = routeChannel[0]?.apiKey; // Assuming all routes share the same API key
+    
       while (true) {
-        for (const route of routeChannel) {
-          const apiKey = route.apiKey; // Use the API key for the current route
-          await sendTotalToThingSpeak3(apiKey, route, summedValues);
-          await delay(interval); // Wait for the specified interval before the next URL
-        }
+        await sendTotalToThingSpeak3(apiKey, routeChannel, summedValues);
+        await delay(interval); // Wait for the specified interval before the next send
       }
     };
 
     sendWithDelay(routeChannel, summedValues);
 
+    
+
+    for (const route of routeChannel) {
+      const total = summedValues[route.routeId] ? summedValues[route.routeId][0] : 0; 
+      await sendTotalToThingSpeak(route, total);
+      await delay(15000); 
+    }
 
     
 
