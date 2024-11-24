@@ -11,7 +11,11 @@ const getRouteIndex = async (req, res) => {
         routeName: "asc", // Sorts routes alphabetically by name
       },
       include: {
-        buses: true, // Includes related buses
+        buses:{
+          where:{
+            isArchived: false
+          }
+        }, // Includes related buses
       },
     });
     res.status(200).json(routes);
