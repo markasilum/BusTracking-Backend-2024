@@ -147,7 +147,7 @@ const getRoutePassengers = async (req, res) => {
       const thingspeakURL = `https://api.thingspeak.com/update?api_key=${apiKey}&${queryParams}`;
       console.log(thingspeakURL);
       // Optionally send the request
-      // await fetch(thingspeakURL);
+      await fetch(thingspeakURL);
     };
 
     const sendWithDelay = async (routeChannel, summedValues, interval = 15000) => {
@@ -161,13 +161,6 @@ const getRoutePassengers = async (req, res) => {
 
     sendWithDelay(routeChannel, summedValues);
 
-    
-
-    for (const route of routeChannel) {
-      const total = summedValues[route.routeId] ? summedValues[route.routeId][0] : 0; 
-      await sendTotalToThingSpeak(route, total);
-      await delay(15000); 
-    }
 
     
 
