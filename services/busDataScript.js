@@ -555,7 +555,7 @@ const sendCoordinates = async (latitude1, longitude1, latitude2, longitude2, lat
         // Send the coordinates to ThingSpeak
         const response = await fetch(url);
         const data = await response.text();
-        console.log(`Sent: lat1 = ${latitude1}, lon1 = ${longitude1}, lat2 = ${latitude2}, lon2 = ${longitude2} - Response: ${data}`);
+        // console.log(`Sent: lat1 = ${latitude1}, lon1 = ${longitude1}, lat2 = ${latitude2}, lon2 = ${longitude2} - Response: ${data}`);
 
     } catch (error) {
         console.error(`Error sending lat1 = ${latitude1}, lon1 = ${longitude1}, lat2 = ${latitude2}, lon2 = ${longitude2}:`, error);
@@ -569,7 +569,7 @@ const sendPassCount = async (bus1Pass, bus2Pass, bus3Pass) => {
         // Send the passenger count data to ThingSpeak
         const response = await fetch(url);
         const data = await response.text();
-        console.log(`Sent: pass1 = ${bus1Pass}, pass2 = ${bus2Pass} - Response: ${data}`);
+        // console.log(`Sent: pass1 = ${bus1Pass}, pass2 = ${bus2Pass} - Response: ${data}`);
     } catch (error) {
         console.error(`Error sending pass1 = ${bus1Pass}, pass2 = ${bus2Pass}:`, error);
     }
@@ -586,7 +586,7 @@ const sendCoordinatesWithDelay = async () => {
             await sendCoordinates(latitude1, longitude1, latitude2, longitude2,latitude3, longitude3);
 
             if (i < coordinates.length - 1) {
-                console.log('Waiting for 15 seconds before sending location...');
+                // console.log('Waiting for 15 seconds before sending location...');
                 await new Promise(resolve => setTimeout(resolve, 15000)); // 15 seconds delay
             }
         }
@@ -605,7 +605,7 @@ const sendPassCountDelay = async () => {
 
             // Delay of 15 seconds if not the last entry in array
             if (i < bus1Pass.length - 1) {
-                console.log('Waiting for 15 seconds before sending the next pass count...');
+                // console.log('Waiting for 15 seconds before sending the next pass count...');
                 await new Promise(resolve => setTimeout(resolve, 15000)); // 15 seconds delay
             }
         }
