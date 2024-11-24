@@ -22,6 +22,7 @@ model Route {
   buses        Bus[]
   stops        Stop[]
   sections     RouteSection[]
+  isArchived Boolean @default(false)
 }
 
 model RouteSection {
@@ -55,6 +56,7 @@ model Bus {
   passengers  Passenger[]
   busChannel  BusChannel?
   busLocation BusLocationChannel?
+  isArchived Boolean @default(false)
 }
 
 model User {
