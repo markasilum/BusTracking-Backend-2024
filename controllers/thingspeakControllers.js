@@ -122,7 +122,7 @@ const getRoutePassengers = async (req, res) => {
       try {
         const response = await fetch(thingspeakURL, { method: 'GET' });
         if (response.ok) {
-          console.log("route pass send response:", response);
+          console.log("route pass send response:", response.text());
         } else {
           console.log(`Failed to send total to ThingSpeak for route ${route.routeId}.`);
         }
