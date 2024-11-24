@@ -102,6 +102,8 @@ const getRoutePassengers = async (req, res) => {
 
     const summedValues = {};
 
+    console.log(summedValues)
+
     const sumValues = (fields) => {
       return Object.values(fields).reduce((sum, value) => {
         const numericValue = parseFloat(value);
@@ -132,6 +134,7 @@ const getRoutePassengers = async (req, res) => {
         console.error(`Error while sending data to ThingSpeak for route ${route.routeId}:`, error);
       }
     };
+
     const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
     for (const route of routeChannel) {
