@@ -1,3 +1,4 @@
 const { getRoutePassengers } = require('../controllers/thingspeakControllers');
 
-getRoutePassengers()
+setInterval(getRoutePassengers, 32000);
+
