@@ -22,6 +22,6 @@ router.get("/driver/:id", busController.getBusOfDriver);
 router.put("/update", busController.updateBus);
 
 // Delete a bus by ID
-router.delete("/:id", busController.deleteBus);
+router.get("/archive/:id", busController.deleteBus);
 
 module.exports = router;

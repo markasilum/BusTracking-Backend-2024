@@ -407,6 +407,9 @@ const getAllBusPassengers = async (req, res) => {
   try {
     // Fetch all buses including their bus channels
     const buses = await prisma.bus.findMany({
+      where:{
+        isArchived: false
+      },
       include: {
         busChannel: true,
       },

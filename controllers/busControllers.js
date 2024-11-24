@@ -5,6 +5,9 @@ const prisma = new PrismaClient();
 const getBusIndex = async (req, res) => {
   try {
     const buses = await prisma.bus.findMany({
+      where:{
+        isArchived: false
+      },
       include: {
         route: true,
         driver: true,
@@ -25,6 +28,7 @@ const getBusIndexOfRoute = async (req, res) => {
     const buses = await prisma.bus.findMany({
       where: {
         routeId: id,
+        isArchived:false
       },
       include: {
         route: true, // Include related route data if needed
@@ -262,7 +266,12 @@ const deleteBus = async (req, res) => {
 
   try {
     await prisma.bus.delete({
-      where: { id },
+      where: {
+        id: id,
+      },
+      data: {
+        isArchived: true
+      }
     });
     res.status(204).send(); // No content to send back
   } catch (error) {
@@ -278,6 +287,7 @@ const getAllBusChannels = async (req, res) => {
     const channels = await prisma.bus.findUnique({
       where: {
         id: id,
+        isArchived:false
       },
       include: {
         busChannel: true,
@@ -300,6 +310,7 @@ const getBusOfDriver = async (req, res) => {
   try {
     const bus = await prisma.bus.findFirst({
       where: {
+        isArchived: false,
         driver:{
           userId: id
         },
