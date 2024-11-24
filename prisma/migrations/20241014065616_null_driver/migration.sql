@@ -1,6 +1,3 @@
--- DropForeignKey
-ALTER TABLE `bus` DROP FOREIGN KEY `Bus_driverId_fkey`;
-
 -- AlterTable
 ALTER TABLE `bus` MODIFY `driverId` VARCHAR(191) NULL;
 
