@@ -4,6 +4,9 @@ const prisma = new PrismaClient();
 const getRouteIndex = async (req, res) => {
   try {
     const routes = await prisma.route.findMany({
+      where: {
+        isArchive: false, // Filters out archived routes
+      },
       orderBy: {
         routeName: "asc",
       },
@@ -90,6 +93,9 @@ const getRouteSections = async (req, res) => {
 const getRoutesCoordinates = async (req, res) => {
   try {
     const routes = await prisma.route.findMany({
+      where: {
+        isArchive: false, // Filters out archived routes
+      },
       include: {
         coordinates: {
           orderBy: {
@@ -257,6 +263,29 @@ const updateRoute = async (req, res) => {
   }
 };
 
+const archiveRoute = async (req, res) => {
+  const {id} = req.params
+
+  try {
+    const archive = await prisma.route.update({
+      where: {
+        id: id,
+      },
+      data: {
+        isArchived: true
+      }
+    }
+  )
+  res.status(201).json(archive);
+
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "An error occurred while archiving the route", error });
+  }
+
+}
+
 module.exports = {
   getRouteIndex,
   getRoutesCoordinates,
@@ -265,4 +294,5 @@ module.exports = {
   updateRoute,
   getRouteSections,
   getSection,
+  archiveRoute,
 };

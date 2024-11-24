@@ -9,6 +9,8 @@ router.post("/create", routeController.createRoute );
 router.post("/update", routeController.updateRoute );
 router.get("/sections/:id", routeController.getRouteSections );
 router.get("/get-section/:id", routeController.getSection );
+router.get("/archive/:id", routeController.archiveRoute );
+
 
 
 
