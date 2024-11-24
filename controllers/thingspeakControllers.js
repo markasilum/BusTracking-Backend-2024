@@ -117,23 +117,6 @@ const getRoutePassengers = async (req, res) => {
 
     const routeChannel = await prisma.routeChannel.findMany({});
 
-    const sendTotalToThingSpeak = async (route, total) => {
-      // console.log(route, total)
-      const thingspeakURL = `https://api.thingspeak.com/update?api_key=${route.apiKey}&field${route.fieldNumber}=${total}`;
-      try {
-        const response = await fetch(thingspeakURL, { method: 'GET' });
-        const data = await response.text();
-
-        if (response.ok) {
-          console.log("route pass send response:", data);
-        } else {
-          console.log(`Failed to send total to ThingSpeak for route ${route.routeId}.`);
-        }
-      } catch (error) {
-        console.error(`Error while sending data to ThingSpeak for route ${route.routeId}:`, error);
-      }
-    };
-
     const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
     const sendTotalToThingSpeak3 = async (apiKey, routeChannel, summedValues) => {
