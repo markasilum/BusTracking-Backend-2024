@@ -117,24 +117,27 @@ const getRoutePassengers = async (req, res) => {
 
     const routeChannel = await prisma.routeChannel.findMany({});
     
-    const groupedByApiKey = routeChannel.reduce((acc, curr) => {
-      if (!acc[curr.apiKey]) acc[curr.apiKey] = [];
-      acc[curr.apiKey].push(curr);
-      return acc;
-    }, {});
-    
-    // Generate ThingSpeak URLs
-    const urls2 = Object.entries(groupedByApiKey).map(([apiKey, channels]) => {
-      const fields = channels
-        .map(channel => {
-          const value = data[channel.routeId]?.[0];
-          return value !== undefined ? `field${channel.fieldNumber}=${value}` : null;
-        })
-        .filter(Boolean) // Remove null entries
-        .join('&');
-      
-      return `https://api.thingspeak.com/update?api_key=${apiKey}&${fields}`;
-    });
+    // Group routeChannel by apiKey
+const groupedByApiKey = routeChannel.reduce((acc, curr) => {
+  if (!acc[curr.apiKey]) acc[curr.apiKey] = [];
+  acc[curr.apiKey].push(curr);
+  return acc;
+}, {});
+
+// Generate ThingSpeak URLs
+const urls2 = Object.entries(groupedByApiKey).map(([apiKey, channels]) => {
+  const fields = channels
+    .map(channel => {
+      // Access the first value from the data array
+      const value = data[channel.routeId]?.[0]; 
+      return value !== undefined ? `field${channel.fieldNumber}=${value}` : null;
+    })
+    .filter(Boolean) // Remove null entries
+    .join('&');
+  
+  // Return the complete ThingSpeak URL
+  return `https://api.thingspeak.com/update?api_key=${apiKey}&${fields}`;
+});
     
     console.log(urls2);
     // const sendTotalToThingSpeak = async (route, total) => {
