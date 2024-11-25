@@ -605,7 +605,7 @@ const sendPassCountDelay = async () => {
 
             // Delay of 15 seconds if not the last entry in array
             if (i < bus1Pass.length - 1) {
-                // console.log('Waiting for 15 seconds before sending the next pass count...');
+                console.log('Waiting for 15 seconds before sending the next pass count...');
                 await new Promise(resolve => setTimeout(resolve, 15000)); // 15 seconds delay
             }
         }
@@ -3744,11 +3744,7 @@ const sendMetricDataDelay = async () => {
     }
 };
 
-
-
-
 // Start DATA
-
 const busDataScript = () => {
     sendCoordinatesWithDelay();
     sendPassCountDelay();
