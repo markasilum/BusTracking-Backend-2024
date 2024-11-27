@@ -544,12 +544,12 @@ const bus2Pass = [
   ];
 
   const bus3Pass = [
+    10, 9, 8, 12, 11, 9, 9, 10, 8, 5, 0, 2, 5, 7, 8, 9, 13, 15, 12, 15,
     3, 8, 10, 14, 15, 13, 12, 8, 10, 11, 10, 11, 12, 7, 6, 1, 0, 1, 5, 8, 
-    10, 9, 8, 12, 11, 9, 9, 10, 8, 5, 0, 2, 5, 7, 8, 9, 13, 15, 12, 15
   ];
 
 const sendCoordinates = async (latitude1, longitude1, latitude2, longitude2, latitude3, longitude3) => {
-    const url = `https://api.thingspeak.com/update?api_key=6RA7HGL30BKCD1CQ&field1=${latitude1}&field2=${longitude1}&field3=${latitude2}&field4=${longitude2}}&field5=${latitude3}&field6=${longitude3}`;
+    const url = `https://api.thingspeak.com/update?api_key=6RA7HGL30BKCD1CQ&field7=${latitude1}&field8=${longitude1}&field3=${latitude2}&field4=${longitude2}}&field5=${latitude3}&field6=${longitude3}`;
 
     try {
         // Send the coordinates to ThingSpeak
@@ -563,7 +563,7 @@ const sendCoordinates = async (latitude1, longitude1, latitude2, longitude2, lat
 };
 
 const sendPassCount = async (bus1Pass, bus2Pass, bus3Pass) => {
-    const url = `https://api.thingspeak.com/update?api_key=AQI26OYG18M6PZYH&field1=${bus1Pass}&field2=${bus2Pass}&field3=${bus3Pass}`;
+    const url = `https://api.thingspeak.com/update?api_key=AQI26OYG18M6PZYH&field4=${bus1Pass}&field2=${bus2Pass}&field3=${bus3Pass}`;
 
     try {
         // Send the passenger count data to ThingSpeak
